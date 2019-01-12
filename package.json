@@ -1,0 +1,31 @@
+{
+  "name": "alfred_iot_data_collector_service",
+  "version": "2.0.0",
+  "description": "ALFRED - IoT data Collector Service",
+  "main": "lib/server.js",
+  "scripts": {
+    "start": "node lib/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "JP",
+  "dependencies": {
+    "noble": "*",
+    "dateformat": "*",
+    "dotenv": "*",
+    "fs": "*",
+    "ip": "*",
+    "os": "*",
+    "pg": "*",
+    "pure-uuid": "*",
+    "request": "*",
+    "request-promise": "*",
+    "restify": "*",
+    "restify-router": "*",
+    "winston": "*"
+  },
+  "devDependencies": {
+    "eslint": "^5.12.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
+  }
+}
