@@ -1,7 +1,7 @@
 {
-  "name": "alfred_iot_data_collector_service",
+  "name": "alfred_garden_data_collector_service",
   "version": "2.0.0",
-  "description": "ALFRED - IoT data Collector Service",
+  "description": "ALFRED - Garden data Collector Service",
   "main": "lib/server.js",
   "scripts": {
     "start": "node lib/server.js",
@@ -9,23 +9,23 @@
   },
   "author": "JP",
   "dependencies": {
-    "noble": "*",
-    "dateformat": "*",
-    "dotenv": "*",
-    "fs": "*",
-    "ip": "*",
-    "os": "*",
-    "pg": "*",
-    "pure-uuid": "*",
-    "request": "*",
-    "request-promise": "*",
-    "restify": "*",
-    "restify-router": "*",
-    "winston": "*"
+    "noble": "latest",
+    "dateformat": "latest",
+    "dotenv": "latest",
+    "fs": "latest",
+    "ip": "latest",
+    "os": "latest",
+    "pg": "latest",
+    "pure-uuid": "latest",
+    "request": "latest",
+    "request-promise": "latest",
+    "restify": "latest",
+    "restify-router": "latest",
+    "winston": "latest"
   },
   "devDependencies": {
-    "eslint": "^5.12.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.14.0"
+    "eslint": "latest",
+    "eslint-config-airbnb-base": "latest",
+    "eslint-plugin-import": "latest"
   }
 }
