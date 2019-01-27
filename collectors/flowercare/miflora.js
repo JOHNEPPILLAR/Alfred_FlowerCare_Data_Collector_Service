@@ -16,6 +16,7 @@ class MiFlora {
     this.devices = {};
     noble.on('stateChange', (state) => {
       serviceHelper.log('trace', 'miflora', `Adapter changed to ${state}`);
+      if (state !== 'poweredOn') noble.stopScanning();
     });
     noble.on('scanStart', () => {
       serviceHelper.log('trace', 'miflora', 'Discovery started');
@@ -122,18 +123,14 @@ class MiFlora {
             serviceHelper.log('trace', 'miflora', `Discovered ${newDevice.type} @ ${newDevice.address}`);
             if (addresses && addresses.length > 0 && this.checkDiscovered(addresses)) {
               serviceHelper.log('trace', 'miflora', 'Found all requested devices, stopping discovery');
-              if (timeout) {
-                clearTimeout(timeout);
-              }
+              if (timeout) clearTimeout(timeout);
               return resolve();
             }
           }
         }
       });
       noble.startScanning([UUID_SERVICE_XIAOMI], true, (error) => {
-        if (error) {
-          return reject(error);
-        }
+        if (error) return reject(error);
       });
     });
   }

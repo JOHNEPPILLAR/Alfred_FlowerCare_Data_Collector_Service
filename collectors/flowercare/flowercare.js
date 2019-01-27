@@ -82,12 +82,7 @@ async function saveDeviceData(DataValues) {
 
 exports.getFlowerCareData = async function getFlowerCareData() {
   try {
-    // serviceHelper.log('trace', 'FlowerCare - getFlowerCareData', 'Discovering flower care devices');
-    // const opts = {
-    //   duration: 60000, // scan for 60 seconds
-    // };
-    // const devices = await miflora.discover(opts);
-    const devices = await miflora.discover();
+    let devices = await miflora.discover();
     serviceHelper.log('trace', 'FlowerCare - getFlowerCareData', `Discovered: ${devices.length}`);
 
     const processItems = async function processItems(counter) {
@@ -95,7 +90,6 @@ exports.getFlowerCareData = async function getFlowerCareData() {
         const deviceData = {};
         serviceHelper.log('trace', 'FlowerCare - getFlowerCareData', `Getting sensor data for device: ${devices[counter].address}`);
         try {
-          // await delay(5000); // Add 5 second pause
           const baseData = await devices[counter].query();
 
           deviceData.address = baseData.address;
@@ -116,7 +110,8 @@ exports.getFlowerCareData = async function getFlowerCareData() {
         processItems(counter + 1); // Call recursive function
       }
     };
-    processItems(0);
+    await processItems(0);
+    devices = null; // De-allocate devices
   } catch (err) {
     serviceHelper.log('error', 'FlowerCare - getFlowerCareData', err.message);
   }
