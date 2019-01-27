@@ -107,7 +107,7 @@ exports.getFlowerCareData = async function getFlowerCareData() {
         } catch (err) {
           serviceHelper.log('error', 'FlowerCare - getFlowerCareData', err.message);
         }
-        processItems(counter + 1); // Call recursive function
+        processItems(counter + 1); // Call recursive function to process next device
       }
     };
     await processItems(0);
