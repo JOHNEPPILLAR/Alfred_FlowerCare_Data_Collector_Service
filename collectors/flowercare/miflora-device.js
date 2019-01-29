@@ -31,7 +31,7 @@ const timeout = (timeoutValue, promiseFuncs) => {
  * Represents a Mi Flora device
  * @public
  */
-class MiFloraDevice {
+class inkBirdDevice {
   /**
    * @private
    * @param {Peripheral} peripheral
@@ -43,7 +43,7 @@ class MiFloraDevice {
     this.modeCharacteristic = undefined;
     this.dataCharacteristic = undefined;
     this.name = peripheral.advertisement.localName;
-    this.address = MiFloraDevice.normaliseAddress(peripheral.address);
+    this.address = inkBirdDevice.normaliseAddress(peripheral.address);
     this.lastDiscovery = new Date().getTime();
     this.isConnected = false;
     this.type = type || 'unknown';
@@ -289,9 +289,9 @@ class MiFloraDevice {
         const productId = dataItem.data.readUInt16LE(2);
         switch (productId) {
           case 152:
-            return new MiFloraDevice(peripheral, 'MiFloraMonitor');
+            return new inkBirdDevice(peripheral, 'MiFloraMonitor');
           case 349:
-            return new MiFloraDevice(peripheral, 'MiFloraPot');
+            return new inkBirdDevice(peripheral, 'MiFloraPot');
           default:
         }
       }
@@ -303,4 +303,4 @@ class MiFloraDevice {
   }
 }
 
-module.exports = MiFloraDevice;
+module.exports = inkBirdDevice;
