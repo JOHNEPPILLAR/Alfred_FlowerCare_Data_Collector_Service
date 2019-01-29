@@ -16,13 +16,16 @@ class MiFlora {
     this.devices = {};
     noble.on('stateChange', (state) => {
       serviceHelper.log('trace', 'miflora', `Adapter changed to ${state}`);
-      if (state !== 'poweredOn') noble.stopScanning();
+      if (state !== 'poweredOn') {
+        noble.stopScanning();
+      }
     });
     noble.on('scanStart', () => {
       serviceHelper.log('trace', 'miflora', 'Discovery started');
     });
     noble.on('scanStop', () => {
-      serviceHelper.log('trace', 'miflora', 'Discovery stopped');
+      serviceHelper.log('trace', 'miflora', 'Discovery stopped and removing listeners');
+      noble.removeAllListeners('discover');
     });
   }
 
@@ -106,7 +109,7 @@ class MiFlora {
         }
       }
       const timeout = setTimeout(() => {
-        serviceHelper.log('Duration reached, stopping discovery');
+        serviceHelper.log('trace', 'miflora', 'Duration reached, stopping discovery');
         return resolve();
       }, duration);
       noble.on('discover', (peripheral) => {
