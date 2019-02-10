@@ -4,7 +4,7 @@
 const serviceHelper = require('../lib/helper.js');
 const flowerCare = require('./flowercare/flowercare.js');
 
-const poolingInterval = 15 * 60 * 1000; // 15 minutes
+const poolingInterval = 5 * 60 * 1000; // 5 minutes
 
 exports.collectData = async function FnCollectData() {
   try {
