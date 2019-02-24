@@ -5,6 +5,7 @@
   "main": "lib/server.js",
   "scripts": {
     "start": "node lib/server.js",
+    "dev": "nodemon lib/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "JP",
@@ -21,7 +22,8 @@
     "request-promise": "latest",
     "restify": "latest",
     "restify-router": "latest",
-    "winston": "latest"
+    "pino": "latest",
+    "pino-pretty": "latest"
   },
   "devDependencies": {
     "eslint": "latest",

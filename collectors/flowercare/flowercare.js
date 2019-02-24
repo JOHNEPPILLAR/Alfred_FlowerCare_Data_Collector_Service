@@ -1,50 +1,8 @@
 /**
- * Import external libraries
- */
-const { Pool } = require('pg');
-
-/**
  * Import helper libraries
  */
 const miflora = require('./miflora.js');
 const serviceHelper = require('../../lib/helper.js');
-
-const devicesDataClient = new Pool({
-  host: process.env.DataStore,
-  database: 'devices',
-  user: process.env.DataStoreUser,
-  password: process.env.DataStoreUserPassword,
-  port: 5432,
-});
-
-/**
- * Tidy up when exit or crytical error raised
- */
-async function cleanExit() {
-  serviceHelper.log('trace', 'FlowerCare - cleanExit', 'Closing the data store pools');
-  try {
-    await devicesDataClient.end();
-  } catch (err) {
-    serviceHelper.log('trace', 'FlowerCare - cleanExit', 'Failed to close the data store connection');
-  }
-  serviceHelper.log('trace', 'FlowerCare - cleanExit', 'Finished collecting Netatmo data');
-}
-process.on('exit', () => { cleanExit(); });
-process.on('SIGINT', () => { cleanExit(); });
-process.on('SIGTERM', () => { cleanExit(); });
-process.on('uncaughtException', (err) => {
-  if (err) serviceHelper.log('error', 'FlowerCare', err.message); // log the error
-  cleanExit();
-});
-
-/**
- * Data store error events
- */
-devicesDataClient.on('error', (err) => {
-  serviceHelper.log('error', 'FlowerCare', 'Devices data store: Unexpected error on idle client');
-  serviceHelper.log('error', 'FlowerCare', err.message);
-  cleanExit();
-});
 
 /**
  * Save data to data store
@@ -64,7 +22,7 @@ async function saveDeviceData(DataValues) {
 
   try {
     serviceHelper.log('trace', 'FlowerCare - saveDeviceData', 'Connect to data store connection pool');
-    const dbClient = await devicesDataClient.connect(); // Connect to data store
+    const dbClient = await global.devicesDataClient.connect(); // Connect to data store
     serviceHelper.log('trace', 'FlowerCare - saveDeviceData', `Save sensor values for device: ${SQLValues[2]}`);
     const results = await dbClient.query(SQL, SQLValues);
     serviceHelper.log('trace', 'FlowerCare - saveDeviceData', 'Release the data store connection back to the pool');
@@ -73,7 +31,7 @@ async function saveDeviceData(DataValues) {
     if (results.rowCount !== 1) {
       serviceHelper.log('error', 'FlowerCare - saveDeviceData', `Failed to insert data for device: ${SQLValues[2]}`);
     } else {
-      serviceHelper.log('trace', 'FlowerCare - saveDeviceData', `Saved data for device: ${SQLValues[2]}`);
+      serviceHelper.log('info', 'FlowerCare - saveDeviceData', `Saved data for device: ${SQLValues[2]}`);
     }
   } catch (err) {
     serviceHelper.log('error', 'FlowerCare - saveDeviceData', err.message);

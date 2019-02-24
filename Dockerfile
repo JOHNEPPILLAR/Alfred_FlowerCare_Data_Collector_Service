@@ -13,6 +13,8 @@ COPY . /home/nodejs/app
 
 RUN npm install --production
 
+RUN npm install pino-elasticsearch -g
+
 CMD [ "npm", "start" ]
 
 EXPOSE 3978
