@@ -4,7 +4,7 @@
   "description": "ALFRED - FlowerCare data Collector Service",
   "main": "lib/server.js",
   "scripts": {
-    "start": "node lib/server.js",
+    "start": "node lib/server.js | pino-elasticsearch -i alfred -H alfred_elk_elasticsearch_1 -p 9200",
     "dev": "nodemon lib/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
