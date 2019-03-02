@@ -10,7 +10,7 @@
   },
   "author": "JP",
   "dependencies": {
-    "noble": "latest",
+    "@abandonware/noble": "git+https://github.com/abandonware/noble.git#pull/8/head",
     "dateformat": "latest",
     "dotenv": "latest",
     "fs": "latest",

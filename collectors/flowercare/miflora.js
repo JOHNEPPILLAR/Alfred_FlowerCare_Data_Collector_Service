@@ -1,7 +1,7 @@
 /**
  * Import external libraries
  */
-const noble = require('noble');
+const noble = require('@abandonware/noble');
 /**
  * Import helper libraries
  */
