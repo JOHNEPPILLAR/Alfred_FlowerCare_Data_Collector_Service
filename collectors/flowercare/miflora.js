@@ -15,16 +15,16 @@ class MiFlora {
   constructor() {
     this.devices = {};
     noble.on('stateChange', (state) => {
-      serviceHelper.log('trace', 'miflora', `Adapter changed to ${state}`);
+      serviceHelper.log('trace', `Adapter changed to ${state}`);
       if (state !== 'poweredOn') {
         noble.stopScanning();
       }
     });
     noble.on('scanStart', () => {
-      serviceHelper.log('trace', 'miflora', 'Discovery started');
+      serviceHelper.log('trace', 'Discovery started');
     });
     noble.on('scanStop', () => {
-      serviceHelper.log('trace', 'miflora', 'Discovery stopped and removing listeners');
+      serviceHelper.log('trace', 'Discovery stopped and removing listeners');
       noble.removeAllListeners('discover');
     });
   }
@@ -74,7 +74,7 @@ class MiFlora {
   ensurePowerOnState() {
     this.returnVal = new Promise(async (resolve) => {
       if (noble.state === 'poweredOn') return resolve();
-      serviceHelper.log('trace', 'miflora', 'Waiting for adapter state change');
+      serviceHelper.log('trace', 'Waiting for adapter state change');
       noble.on('stateChange', (state) => {
         if (state === 'poweredOn') return resolve();
       });
@@ -100,22 +100,22 @@ class MiFlora {
    */
   startScan(addresses, duration, ignoreUnknown) {
     return new Promise((resolve, reject) => {
-      serviceHelper.log('trace', 'miflora', `Starting discovery with ${duration}ms duration`);
+      serviceHelper.log('trace', `Starting discovery with ${duration}ms duration`);
 
       if (addresses && addresses.length > 0) {
-        serviceHelper.log('trace', 'miflora', `Discovery will be stopped when ${addresses} ${addresses.length === 1 ? 'is' : 'are'} found`);
+        serviceHelper.log('trace', `Discovery will be stopped when ${addresses} ${addresses.length === 1 ? 'is' : 'are'} found`);
         if (this.checkDiscovered(addresses)) {
           return resolve();
         }
       }
       const timeout = setTimeout(() => {
-        serviceHelper.log('trace', 'miflora', 'Duration reached, stopping discovery');
+        serviceHelper.log('trace', 'Duration reached, stopping discovery');
         return resolve();
       }, duration);
       noble.on('discover', (peripheral) => {
         const deviceAddress = MiFloraDevice.normaliseAddress(peripheral.address);
         if (ignoreUnknown && !addresses.find(addr => addr === deviceAddress)) {
-          serviceHelper.log('trace', 'miflora', `Ignoring device with address ${deviceAddress}`);
+          serviceHelper.log('trace', `Ignoring device with address ${deviceAddress}`);
           return;
         }
         const exisitingDevice = this.devices[deviceAddress];
@@ -123,9 +123,9 @@ class MiFlora {
           const newDevice = MiFloraDevice.from(peripheral);
           if (newDevice) {
             this.devices[deviceAddress] = newDevice;
-            serviceHelper.log('trace', 'miflora', `Discovered ${newDevice.type} @ ${newDevice.address}`);
+            serviceHelper.log('trace', `Discovered ${newDevice.type} @ ${newDevice.address}`);
             if (addresses && addresses.length > 0 && this.checkDiscovered(addresses)) {
-              serviceHelper.log('trace', 'miflora', 'Found all requested devices, stopping discovery');
+              serviceHelper.log('trace', 'Found all requested devices, stopping discovery');
               if (timeout) clearTimeout(timeout);
               return resolve();
             }

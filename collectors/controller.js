@@ -10,7 +10,7 @@ exports.collectData = async function FnCollectData() {
   try {
     await flowerCare.getFlowerCareData(); // Collect Flower Care device data
   } catch (err) {
-    serviceHelper.log('error', 'Controller - CollectData', err.message);
+    serviceHelper.log('error', err.message);
   }
   setTimeout(() => { FnCollectData(); }, poolingInterval); // Wait then run function again
 };

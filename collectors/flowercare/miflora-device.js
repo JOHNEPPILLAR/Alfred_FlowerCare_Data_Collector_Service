@@ -53,17 +53,17 @@ class inkBirdDevice {
     };
     peripheral.on('connect', (error) => {
       if (error) {
-        serviceHelper.log('trace', 'miflora-device', `Error while connecting to device: ${error}`);
+        serviceHelper.log('trace', `Error while connecting to device: ${error}`);
       } else {
-        serviceHelper.log('trace', 'miflora-device', `Connected to device ${this.address}`);
+        serviceHelper.log('trace', `Connected to device ${this.address}`);
         this.isConnected = true;
       }
     });
     peripheral.on('disconnect', (error) => {
       if (error) {
-        serviceHelper.log('trace', 'miflora-device', `Error while disconnecting to device: ${error}`);
+        serviceHelper.log('trace', `Error while disconnecting to device: ${error}`);
       } else {
-        serviceHelper.log('trace', 'miflora-device', `Disconnected from device ${this.address}`);
+        serviceHelper.log('trace', `Disconnected from device ${this.address}`);
         this.isConnected = false;
       }
     });
@@ -85,7 +85,7 @@ class inkBirdDevice {
           return reject(error);
         }
       });
-      serviceHelper.log('trace', 'miflora-device', 'Initiating connection');
+      serviceHelper.log('trace', 'Initiating connection');
       this.peripheral.connect();
     });
   }
@@ -107,14 +107,14 @@ class inkBirdDevice {
           return reject(error);
         }
       });
-      serviceHelper.log('trace', 'miflora-device', 'Closing connection');
+      serviceHelper.log('trace', 'Closing connection');
       this.peripheral.disconnect();
     });
   }
 
   queryFirmwareInfo(plain = false) {
     return timeout(10000, async (resolve, reject) => {
-      serviceHelper.log('trace', 'miflora-device', 'Querying firmware information');
+      serviceHelper.log('trace', 'Querying firmware information');
       try {
         await this.connect();
         const data = await this.readCharacteristic(this.firmwareCharacteristic);
@@ -123,7 +123,7 @@ class inkBirdDevice {
           battery: data.readUInt8(0),
           firmware: data.toString('ascii', 2, data.length),
         };
-        serviceHelper.log('trace', 'miflora-device', `Successfully queried firmware information: ${response.firmwareInfo}`);
+        serviceHelper.log('trace', `Successfully queried firmware information: ${response.firmwareInfo}`);
         resolve(plain ? response.firmwareInfo : response);
       } catch (err) {
         reject(err);
@@ -133,7 +133,7 @@ class inkBirdDevice {
 
   querySensorValues(plain = false) {
     return timeout(10000, async (resolve, reject) => {
-      serviceHelper.log('trace', 'miflora-device', 'Querying sensor information');
+      serviceHelper.log('trace', 'Querying sensor information');
       try {
         await this.connect();
         await this.setRealtimeDataMode(true);
@@ -145,7 +145,7 @@ class inkBirdDevice {
           moisture: data.readUInt8(7),
           fertility: data.readUInt16LE(8),
         };
-        serviceHelper.log('trace', 'miflora-device', `Successfully queried sensor information: ${response.sensorValues}`);
+        serviceHelper.log('trace', `Successfully queried sensor information: ${response.sensorValues}`);
         return resolve(plain ? response.sensorValues : response);
       } catch (error) {
         return reject(error);
@@ -155,14 +155,14 @@ class inkBirdDevice {
 
   querySerial(plain = false) {
     return timeout(10000, async (resolve, reject) => {
-      serviceHelper.log('trace', 'miflora-device', 'Querying serial number');
+      serviceHelper.log('trace', 'Querying serial number');
       try {
         await this.connect();
         await this.setDeviceMode(MODE_BUFFER_SERIAL);
         const data = await this.readCharacteristic(this.dataCharacteristic);
         const response = this.responseTemplate;
         response.serial = data.toString('hex');
-        serviceHelper.log('trace', 'miflora-device', `Successfully queried serial number: ${response.serial}`);
+        serviceHelper.log('trace', `Successfully queried serial number: ${response.serial}`);
         return resolve(plain ? response.serial : response);
       } catch (error) {
         return reject(error);
@@ -177,7 +177,7 @@ class inkBirdDevice {
         const result = this.responseTemplate;
         result.firmwareInfo = await this.queryFirmwareInfo(true);
         result.sensorValues = await this.querySensorValues(true);
-        serviceHelper.log('trace', 'miflora-device', 'Successfully queried multiple information');
+        serviceHelper.log('trace', 'Successfully queried multiple information');
         return resolve(result);
       } catch (error) {
         return reject(error);
@@ -192,11 +192,11 @@ class inkBirdDevice {
   setDeviceMode(buffer) {
     return timeout(10000, async (resolve, reject) => {
       try {
-        serviceHelper.log('trace', 'miflora-device', 'Changing device mode');
+        serviceHelper.log('trace', 'Changing device mode');
         await this.writeCharacteristic(this.modeCharacteristic, buffer);
         const data = await this.readCharacteristic(this.modeCharacteristic);
         if (data.equals(buffer)) {
-          serviceHelper.log('trace', 'miflora-device', 'Successfully changed device mode');
+          serviceHelper.log('trace', 'Successfully changed device mode');
           return resolve(data);
         }
         return reject(new Error('Failed to change mode'));
@@ -212,7 +212,7 @@ class inkBirdDevice {
   setRealtimeDataMode(enable) {
     return timeout(10000, async (resolve, reject) => {
       try {
-        serviceHelper.log('trace', 'miflora-device', `${enable ? 'enabling' : 'disabling'} realtime data mode`);
+        serviceHelper.log('trace', `${enable ? 'enabling' : 'disabling'} realtime data mode`);
         const buffer = enable ? MODE_BUFFER_REALTIME.Enable : MODE_BUFFER_REALTIME.Disable;
         return resolve(await this.setDeviceMode(buffer));
       } catch (err) {
@@ -224,10 +224,10 @@ class inkBirdDevice {
   resolveCharacteristics() {
     return timeout(10004, async (resolve, reject) => {
       try {
-        serviceHelper.log('trace', 'miflora-device', 'Resolving characteristic');
+        serviceHelper.log('trace', 'Resolving characteristic');
         this.peripheral.discoverAllServicesAndCharacteristics((error, services, characteristics) => {
           if (error) return reject(error);
-          serviceHelper.log('trace', 'miflora-device', `Successfully resolved characteristics ${services.length} ${characteristics.length}`);
+          serviceHelper.log('trace', `Successfully resolved characteristics ${services.length} ${characteristics.length}`);
           this.service = this.peripheral.services.find(entry => entry.uuid === UUID_SERVICE_DATA);
           this.firmwareCharacteristic = this.service.characteristics.find(entry => entry.uuid === UUID_CHARACTERISTIC_FIRMWARE);
           this.modeCharacteristic = this.service.characteristics.find(entry => entry.uuid === UUID_CHARACTERISTIC_MODE);
@@ -248,7 +248,7 @@ class inkBirdDevice {
       try {
         characteristic.read((error, data) => {
           if (error) return reject(error);
-          serviceHelper.log('trace', 'miflora-device', `Successfully read value ${data.toString('hex').toUpperCase()} from characteristic ${characteristic.uuid.toUpperCase()}`);
+          serviceHelper.log('trace', `Successfully read value ${data.toString('hex').toUpperCase()} from characteristic ${characteristic.uuid.toUpperCase()}`);
           return resolve(data);
         });
       } catch (error) {
@@ -266,7 +266,7 @@ class inkBirdDevice {
       try {
         characteristic.write(data, false, (error) => {
           if (error) return reject(error);
-          serviceHelper.log('trace', 'miflora-device', `Successfully wrote value ${data.toString('hex').toUpperCase()} from characteristic ${characteristic.uuid.toUpperCase()}`);
+          serviceHelper.log('trace', `Successfully wrote value ${data.toString('hex').toUpperCase()} from characteristic ${characteristic.uuid.toUpperCase()}`);
           return resolve();
         });
       } catch (error) {

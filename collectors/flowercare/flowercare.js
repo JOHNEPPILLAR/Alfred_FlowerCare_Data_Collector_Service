@@ -21,32 +21,32 @@ async function saveDeviceData(DataValues) {
   ];
 
   try {
-    serviceHelper.log('trace', 'FlowerCare - saveDeviceData', 'Connect to data store connection pool');
+    serviceHelper.log('trace', 'Connect to data store connection pool');
     const dbClient = await global.devicesDataClient.connect(); // Connect to data store
-    serviceHelper.log('trace', 'FlowerCare - saveDeviceData', `Save sensor values for device: ${SQLValues[2]}`);
+    serviceHelper.log('trace', `Save sensor values for device: ${SQLValues[2]}`);
     const results = await dbClient.query(SQL, SQLValues);
-    serviceHelper.log('trace', 'FlowerCare - saveDeviceData', 'Release the data store connection back to the pool');
+    serviceHelper.log('trace', 'Release the data store connection back to the pool');
     await dbClient.release(); // Return data store connection back to pool
 
     if (results.rowCount !== 1) {
-      serviceHelper.log('error', 'FlowerCare - saveDeviceData', `Failed to insert data for device: ${SQLValues[2]}`);
+      serviceHelper.log('error', `Failed to insert data for device: ${SQLValues[2]}`);
     } else {
-      serviceHelper.log('info', 'FlowerCare - saveDeviceData', `Saved data for device: ${SQLValues[2]}`);
+      serviceHelper.log('info', `Saved data for device: ${SQLValues[2]}`);
     }
   } catch (err) {
-    serviceHelper.log('error', 'FlowerCare - saveDeviceData', err.message);
+    serviceHelper.log('error', err.message);
   }
 }
 
 exports.getFlowerCareData = async function getFlowerCareData() {
   try {
     let devices = await miflora.discover();
-    serviceHelper.log('trace', 'FlowerCare - getFlowerCareData', `Discovered: ${devices.length}`);
+    serviceHelper.log('trace', `Discovered: ${devices.length}`);
 
     const processItems = async function processItems(counter) {
       if (counter < devices.length) {
         const deviceData = {};
-        serviceHelper.log('trace', 'FlowerCare - getFlowerCareData', `Getting sensor data for device: ${devices[counter].address}`);
+        serviceHelper.log('trace', `Getting sensor data for device: ${devices[counter].address}`);
         try {
           const baseData = await devices[counter].query();
 
@@ -58,12 +58,12 @@ exports.getFlowerCareData = async function getFlowerCareData() {
           deviceData.moisture = baseData.sensorValues.moisture;
           deviceData.fertility = baseData.sensorValues.fertility;
 
-          serviceHelper.log('trace', 'FlowerCare - getFlowerCareData', `Disconnect device: ${devices[counter].address}`);
+          serviceHelper.log('trace', `Disconnect device: ${devices[counter].address}`);
           devices[counter].disconnect();
 
           await saveDeviceData(deviceData); // Save the device data
         } catch (err) {
-          serviceHelper.log('error', 'FlowerCare - getFlowerCareData', err.message);
+          serviceHelper.log('error', err.message);
         }
         processItems(counter + 1); // Call recursive function to process next device
       }
@@ -71,6 +71,6 @@ exports.getFlowerCareData = async function getFlowerCareData() {
     await processItems(0);
     devices = null; // De-allocate devices
   } catch (err) {
-    serviceHelper.log('error', 'FlowerCare - getFlowerCareData', err.message);
+    serviceHelper.log('error', err.message);
   }
 };
