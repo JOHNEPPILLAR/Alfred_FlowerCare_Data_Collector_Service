@@ -12,11 +12,3 @@ services:
       - "3984:3978"
     privileged: true
     hostname: alfred_flowercare_data_collector_service
-    networks:
-      - alfred
-
-networks:
-
-  alfred:
-    name: alfred
-    driver: nat  
