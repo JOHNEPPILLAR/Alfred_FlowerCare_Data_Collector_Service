@@ -43,6 +43,8 @@ exports.getFlowerCareData = async function getFlowerCareData() {
     let devices = await miflora.discover();
     serviceHelper.log('trace', `Discovered: ${devices.length}`);
 
+    if (devices.length === 0) serviceHelper.log('info', 'No Flower Care devices found');
+
     const processItems = async function processItems(counter) {
       if (counter < devices.length) {
         const deviceData = {};
