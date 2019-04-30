@@ -40,38 +40,69 @@ async function saveDeviceData(DataValues) {
 
 exports.getFlowerCareData = async function getFlowerCareData() {
   try {
-    let devices = await miflora.discover();
+    const devices = await miflora.discover();
     serviceHelper.log('trace', `Discovered: ${devices.length}`);
 
-    if (devices.length === 0) serviceHelper.log('info', 'No Flower Care devices found');
+    if (devices.length === 0) {
+      serviceHelper.log('info', 'No Flower Care devices found');
+      return;
+    }
 
+    devices.forEach(async (device) => {
+      const deviceData = {};
+      serviceHelper.log('trace', `Getting sensor data for device: ${device.address}`);
+      try {
+        // device.connect();
+        const baseData = await device.query();
+        deviceData.address = baseData.address;
+        deviceData.type = baseData.type;
+        deviceData.battery = baseData.firmwareInfo.battery;
+        deviceData.temperature = baseData.sensorValues.temperature;
+        deviceData.lux = baseData.sensorValues.lux;
+        deviceData.moisture = baseData.sensorValues.moisture;
+        deviceData.fertility = baseData.sensorValues.fertility;
+
+        serviceHelper.log('trace', `Disconnect device: ${baseData.address}`);
+        device.disconnect();
+
+        await saveDeviceData(deviceData); // Save the device data
+      } catch (err) {
+        serviceHelper.log('error', err.message);
+      }
+    });
+
+    /*
     const processItems = async function processItems(counter) {
-      if (counter < devices.length) {
-        const deviceData = {};
-        serviceHelper.log('trace', `Getting sensor data for device: ${devices[counter].address}`);
-        try {
-          const baseData = await devices[counter].query();
+      const deviceData = {};
+      serviceHelper.log('trace', `Getting sensor data for device: ${devices[counter].address}`);
+      try {
+        const baseData = await devices[counter].query();
+        deviceData.address = baseData.address;
+        deviceData.type = baseData.type;
+        deviceData.battery = baseData.firmwareInfo.battery;
+        deviceData.temperature = baseData.sensorValues.temperature;
+        deviceData.lux = baseData.sensorValues.lux;
+        deviceData.moisture = baseData.sensorValues.moisture;
+        deviceData.fertility = baseData.sensorValues.fertility;
 
-          deviceData.address = baseData.address;
-          deviceData.type = baseData.type;
-          deviceData.battery = baseData.firmwareInfo.battery;
-          deviceData.temperature = baseData.sensorValues.temperature;
-          deviceData.lux = baseData.sensorValues.lux;
-          deviceData.moisture = baseData.sensorValues.moisture;
-          deviceData.fertility = baseData.sensorValues.fertility;
+        serviceHelper.log('trace', `Disconnect device: ${baseData.address}`);
+        devices[counter].disconnect();
 
-          serviceHelper.log('trace', `Disconnect device: ${devices[counter].address}`);
-          devices[counter].disconnect();
+        await saveDeviceData(deviceData); // Save the device data
+      } catch (err) {
+        serviceHelper.log('error', err.message);
+      }
 
-          await saveDeviceData(deviceData); // Save the device data
-        } catch (err) {
-          serviceHelper.log('error', err.message);
-        }
+      console.log(counter + '-'+ devices.length)
+      console.log((counter + 1) + '-'+ devices.length)
+
+      if ((counter + 1) < devices.length) {
         processItems(counter + 1); // Call recursive function to process next device
       }
     };
     await processItems(0);
     devices = null; // De-allocate devices
+    */
   } catch (err) {
     serviceHelper.log('error', err.message);
   }
