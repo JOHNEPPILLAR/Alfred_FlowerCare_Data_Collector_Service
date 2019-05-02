@@ -9,6 +9,7 @@
   },
   "author": "JP",
   "dependencies": {
+    "elastic-apm-node": "latest",
     "@abandonware/noble": "git+https://github.com/abandonware/noble.git#pull/8/head",
     "dateformat": "latest",
     "dotenv": "latest",
