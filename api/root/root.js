@@ -39,15 +39,15 @@ function ping(req, res, next) {
   };
 
   if (process.env.Environment === 'production') {
-    const client = new elasticsearch.Client({
-      hosts: [process.env.ElasticSearch],
-    });
-
-    const load = os.loadavg();
-    const currentDate = new Date();
-    const formatDate = currentDate.toISOString();
-
     try {
+      const client = new elasticsearch.Client({
+        hosts: [process.env.ElasticSearch],
+      });
+
+      const load = os.loadavg();
+      const currentDate = new Date();
+      const formatDate = currentDate.toISOString();
+
       client.index({
         index: 'health',
         type: 'health',
