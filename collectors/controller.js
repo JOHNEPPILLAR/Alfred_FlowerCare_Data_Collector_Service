@@ -12,5 +12,7 @@ exports.collectData = async function FnCollectData() {
   } catch (err) {
     serviceHelper.log('error', err.message);
   }
-  setTimeout(() => { FnCollectData(); }, poolingInterval); // Wait then run function again
+  setTimeout(() => {
+    FnCollectData();
+  }, poolingInterval); // Wait then run function again
 };

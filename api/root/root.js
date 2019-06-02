@@ -56,7 +56,7 @@ function ping(req, res, next) {
           hostname: os.hostname(),
           mem_free: os.freemem(),
           mem_total: os.totalmem(),
-          mem_percent: ((os.freemem() * 100) / os.totalmem()),
+          mem_percent: (os.freemem() * 100) / os.totalmem(),
           cpu: Math.min(Math.floor((load[0] * 100) / os.cpus().length), 100),
         },
       });

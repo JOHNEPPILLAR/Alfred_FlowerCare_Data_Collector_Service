@@ -52,9 +52,11 @@ class MiFlora {
    * @private
    */
   ensurePowerOnState() {
+    // eslint-disable-next-line consistent-return
     this.returnVal = new Promise(async (resolve) => {
       if (noble.state === 'poweredOn') return resolve();
       serviceHelper.log('trace', 'Waiting for adapter state change');
+      // eslint-disable-next-line consistent-return
       noble.on('stateChange', (state) => {
         if (state === 'poweredOn') return resolve();
       });

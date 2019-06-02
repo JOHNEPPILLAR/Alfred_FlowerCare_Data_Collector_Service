@@ -62,8 +62,11 @@ class MiFloraDevice {
    * @returns {Promise} Promise for connection process
    */
   connect() {
+    // eslint-disable-next-line consistent-return
     return new Promise(async (resolve, reject) => {
-      const deviceTimeout = setTimeout(() => { reject(new Error('device connection timeout')); }, timeout);
+      const deviceTimeout = setTimeout(() => {
+        reject(new Error('device connection timeout'));
+      }, timeout);
 
       if (this.peripheral.state === 'connected') {
         clearTimeout(deviceTimeout);
@@ -92,8 +95,11 @@ class MiFloraDevice {
    * @returns {Promise} Promise for disconnection process
    */
   disconnect() {
+    // eslint-disable-next-line consistent-return
     return new Promise(async (resolve, reject) => {
-      const deviceTimeout = setTimeout(() => { reject(new Error('device disconnect timeout')); }, timeout);
+      const deviceTimeout = setTimeout(() => {
+        reject(new Error('device disconnect timeout'));
+      }, timeout);
       if (this.peripheral.state === 'disconnected') {
         clearTimeout(deviceTimeout);
         return resolve();
@@ -115,7 +121,9 @@ class MiFloraDevice {
 
   queryFirmwareInfo(plain = false) {
     return new Promise(async (resolve, reject) => {
-      const deviceTimeout = setTimeout(() => { reject(new Error('queryFirmwareInfo timeout')); }, timeout);
+      const deviceTimeout = setTimeout(() => {
+        reject(new Error('queryFirmwareInfo timeout'));
+      }, timeout);
       serviceHelper.log('trace', 'Querying firmware information');
       try {
         await this.connect();
@@ -125,7 +133,10 @@ class MiFloraDevice {
           battery: data.readUInt8(0),
           firmware: data.toString('ascii', 2, data.length),
         };
-        serviceHelper.log('trace', `Successfully queried firmware information: ${JSON.stringify(response.firmwareInfo)}`);
+        serviceHelper.log(
+          'trace',
+          `Successfully queried firmware information: ${JSON.stringify(response.firmwareInfo)}`,
+        );
         clearTimeout(deviceTimeout);
         resolve(plain ? response.firmwareInfo : response);
       } catch (error) {
@@ -141,7 +152,9 @@ class MiFloraDevice {
    */
   setRealtimeDataMode(enable) {
     return new Promise(async (resolve, reject) => {
-      const deviceTimeout = setTimeout(() => { reject(new Error('setRealtimeDataMode timeout')); }, timeout);
+      const deviceTimeout = setTimeout(() => {
+        reject(new Error('setRealtimeDataMode timeout'));
+      }, timeout);
       serviceHelper.log('trace', `${enable ? 'enabling' : 'disabling'} realtime data mode`);
       try {
         const buffer = enable ? MODE_BUFFER_REALTIME.Enable : MODE_BUFFER_REALTIME.Disable;
@@ -161,7 +174,9 @@ class MiFloraDevice {
    */
   setDeviceMode(buffer) {
     return new Promise(async (resolve, reject) => {
-      const deviceTimeout = setTimeout(() => { reject(new Error('setDeviceMode timeout')); }, timeout);
+      const deviceTimeout = setTimeout(() => {
+        reject(new Error('setDeviceMode timeout'));
+      }, timeout);
       serviceHelper.log('trace', 'Changing device mode');
       try {
         await this.writeCharacteristic(this.modeCharacteristic, buffer);
@@ -183,7 +198,9 @@ class MiFloraDevice {
 
   querySensorValues(plain = false) {
     return new Promise(async (resolve, reject) => {
-      const deviceTimeout = setTimeout(() => { reject(new Error('querySensorValues timeout')); }, timeout);
+      const deviceTimeout = setTimeout(() => {
+        reject(new Error('querySensorValues timeout'));
+      }, timeout);
       serviceHelper.log('trace', 'Querying sensor information');
       try {
         await this.connect();
@@ -196,7 +213,10 @@ class MiFloraDevice {
           moisture: data.readUInt8(7),
           fertility: data.readUInt16LE(8),
         };
-        serviceHelper.log('trace', `Successfully queried sensor information: ${JSON.stringify(response.sensorValues)}`);
+        serviceHelper.log(
+          'trace',
+          `Successfully queried sensor information: ${JSON.stringify(response.sensorValues)}`,
+        );
         clearTimeout(deviceTimeout);
         return resolve(plain ? response.sensorValues : response);
       } catch (error) {
@@ -209,7 +229,9 @@ class MiFloraDevice {
 
   query() {
     return new Promise(async (resolve, reject) => {
-      const deviceTimeout = setTimeout(() => { reject(new Error('query all values timeout')); }, timeout);
+      const deviceTimeout = setTimeout(() => {
+        reject(new Error('query all values timeout'));
+      }, timeout);
       serviceHelper.log('trace', 'miflora-device', 'Querying all values');
       try {
         const result = this.responseTemplate;
@@ -227,20 +249,34 @@ class MiFloraDevice {
   }
 
   resolveCharacteristics() {
+    // eslint-disable-next-line consistent-return
     return new Promise(async (resolve, reject) => {
-      const deviceTimeout = setTimeout(() => { reject(new Error('resolveCharacteristics timeout')); }, timeout);
+      const deviceTimeout = setTimeout(() => {
+        reject(new Error('resolveCharacteristics timeout'));
+      }, timeout);
       serviceHelper.log('trace', 'Resolving characteristic');
       try {
-        this.peripheral.discoverAllServicesAndCharacteristics((error, services, characteristics) => {
-          if (error) return reject(error);
-          serviceHelper.log('trace', `Successfully resolved characteristics ${services.length} ${characteristics.length}`);
-          this.service = this.peripheral.services.find(entry => entry.uuid === UUID_SERVICE_DATA);
-          this.firmwareCharacteristic = this.service.characteristics.find(entry => entry.uuid === UUID_CHARACTERISTIC_FIRMWARE);
-          this.modeCharacteristic = this.service.characteristics.find(entry => entry.uuid === UUID_CHARACTERISTIC_MODE);
-          this.dataCharacteristic = this.service.characteristics.find(entry => entry.uuid === UUID_CHARACTERISTIC_DATA);
-          clearTimeout(deviceTimeout);
-          return resolve();
-        });
+        this.peripheral.discoverAllServicesAndCharacteristics(
+          (error, services, characteristics) => {
+            if (error) return reject(error);
+            serviceHelper.log(
+              'trace',
+              `Successfully resolved characteristics ${services.length} ${characteristics.length}`,
+            );
+            this.service = this.peripheral.services.find(entry => entry.uuid === UUID_SERVICE_DATA);
+            this.firmwareCharacteristic = this.service.characteristics.find(
+              entry => entry.uuid === UUID_CHARACTERISTIC_FIRMWARE,
+            );
+            this.modeCharacteristic = this.service.characteristics.find(
+              entry => entry.uuid === UUID_CHARACTERISTIC_MODE,
+            );
+            this.dataCharacteristic = this.service.characteristics.find(
+              entry => entry.uuid === UUID_CHARACTERISTIC_DATA,
+            );
+            clearTimeout(deviceTimeout);
+            return resolve();
+          },
+        );
       } catch (error) {
         serviceHelper.log('error', error.message);
         clearTimeout(deviceTimeout);
@@ -253,15 +289,23 @@ class MiFloraDevice {
    * @private
    */
   readCharacteristic(characteristic) {
+    // eslint-disable-next-line consistent-return
     this.returnValue = new Promise(async (resolve, reject) => {
-      const deviceTimeout = setTimeout(() => { reject(new Error('readCharacteristic timeout')); }, timeout);
+      const deviceTimeout = setTimeout(() => {
+        reject(new Error('readCharacteristic timeout'));
+      }, timeout);
       try {
         characteristic.read((error, data) => {
           if (error) {
             clearTimeout(deviceTimeout);
             return reject(error);
           }
-          serviceHelper.log('trace', `Successfully read value ${data.toString('hex').toUpperCase()} from characteristic ${characteristic.uuid.toUpperCase()}`);
+          serviceHelper.log(
+            'trace',
+            `Successfully read value ${data
+              .toString('hex')
+              .toUpperCase()} from characteristic ${characteristic.uuid.toUpperCase()}`,
+          );
           clearTimeout(deviceTimeout);
           return resolve(data);
         });
@@ -278,8 +322,11 @@ class MiFloraDevice {
    * @private
    */
   writeCharacteristic(characteristic, data) {
+    // eslint-disable-next-line consistent-return
     this.returnValue = new Promise(async (resolve, reject) => {
-      const deviceTimeout = setTimeout(() => { reject(new Error('writeCharacteristic timeout')); }, timeout);
+      const deviceTimeout = setTimeout(() => {
+        reject(new Error('writeCharacteristic timeout'));
+      }, timeout);
       try {
         characteristic.write(data, false, (error) => {
           if (error) {
@@ -287,7 +334,12 @@ class MiFloraDevice {
             clearTimeout(deviceTimeout);
             return reject(error);
           }
-          serviceHelper.log('trace', `Successfully wrote value ${data.toString('hex').toUpperCase()} from characteristic ${characteristic.uuid.toUpperCase()}`);
+          serviceHelper.log(
+            'trace',
+            `Successfully wrote value ${data
+              .toString('hex')
+              .toUpperCase()} from characteristic ${characteristic.uuid.toUpperCase()}`,
+          );
           clearTimeout(deviceTimeout);
           return resolve();
         });
@@ -308,7 +360,9 @@ class MiFloraDevice {
    */
   static from(peripheral) {
     if (peripheral && peripheral.advertisement && peripheral.advertisement.serviceData) {
-      const dataItem = peripheral.advertisement.serviceData.find(item => item.uuid === UUID_SERVICE_XIAOMI);
+      const dataItem = peripheral.advertisement.serviceData.find(
+        item => item.uuid === UUID_SERVICE_XIAOMI,
+      );
       if (dataItem) {
         const productId = dataItem.data.readUInt16LE(2);
         switch (productId) {
