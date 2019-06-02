@@ -1,0 +1,23 @@
+version: '3.5'
+
+services:
+
+  alfred_flowercare_data_collector_service:
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+    image: alfred_flowercare_data_collector_service:latest
+    container_name: alfred_flowercare_data_collector_service
+    restart: always
+    hostname: alfred_flowercare_data_collector_service
+    networks:
+      - alfred
+    ports:
+      - "3984:3978"
+    command: npm run dev
+
+networks:
+
+  alfred:
+    name: alfred
+    driver: bridge

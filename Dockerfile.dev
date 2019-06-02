@@ -10,12 +10,9 @@ WORKDIR /home/nodejs/app
 
 COPY . /home/nodejs/app
 
-RUN npm update \
-	&& npm install --production \
-	&& npm install pino-elasticsearch -g
-	
-CMD [ "npm", "start" ]
+RUN npm install nodemon \
+	&& npm install
 
 HEALTHCHECK --start-period=60s --interval=10s --timeout=10s --retries=6 CMD ["./healthcheck.sh"]
 
-EXPOSE 3984
+EXPOSE 3978

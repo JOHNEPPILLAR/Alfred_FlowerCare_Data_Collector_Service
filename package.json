@@ -9,25 +9,25 @@
   },
   "author": "JP",
   "dependencies": {
-    "elasticsearch": "latest",
     "@abandonware/noble": "git+https://github.com/abandonware/noble.git#pull/8/head",
-    "dateformat": "latest",
-    "dotenv": "latest",
-    "fs": "latest",
-    "ip": "latest",
-    "os": "latest",
-    "pg": "latest",
-    "pure-uuid": "latest",
-    "request": "latest",
-    "request-promise": "latest",
-    "restify": "latest",
-    "restify-router": "latest",
-    "pino": "latest",
-    "pino-pretty": "latest"
+    "dateformat": "^3.0.3",
+    "dotenv": "^8.0.0",
+    "elasticsearch": "^16.1.0",
+    "fs": "^0.0.2",
+    "ip": "^1.1.5",
+    "os": "^0.1.1",
+    "pg": "^7.11.0",
+    "pino": "^5.12.6",
+    "pino-pretty": "^3.1.0",
+    "pure-uuid": "^1.5.7",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
+    "restify": "^8.3.2",
+    "restify-router": "^0.5.1"
   },
   "devDependencies": {
-    "eslint": "latest",
-    "eslint-config-airbnb-base": "latest",
-    "eslint-plugin-import": "latest"
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.17.3"
   }
 }
