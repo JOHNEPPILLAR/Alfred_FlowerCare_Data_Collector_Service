@@ -12,7 +12,7 @@
     "@abandonware/noble": "git+https://github.com/abandonware/noble.git#pull/8/head",
     "dateformat": "^3.0.3",
     "dotenv": "^8.0.0",
-    "elasticsearch": "^16.1.0",
+    "elasticsearch": "^16.1.1",
     "fs": "^0.0.2",
     "ip": "^1.1.5",
     "os": "^0.1.1",
@@ -22,7 +22,7 @@
     "pure-uuid": "^1.5.7",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "restify": "^8.3.2",
+    "restify": "^8.3.3",
     "restify-router": "^0.5.1"
   },
   "devDependencies": {

@@ -134,7 +134,7 @@ skill.get('/all', all);
 async function current(req, res, next) {
   serviceHelper.log('trace', 'Display latest garden sensor readings API called');
   try {
-    const SQL = 'SELECT address, sensor_label, plant_name, moisture, threshold_moisture, fertiliser, threshold_fertilizer FROM vw_plant_data ORDER BY sensor_label GROUP BY address, sensor_label, plant_name, moisture, threshold_moisture, fertiliser, threshold_fertilizer';
+    const SQL = 'SELECT address, sensor_label, plant_name, moisture, threshold_moisture, fertiliser, threshold_fertilizer FROM vw_plant_data GROUP BY address, sensor_label, plant_name, moisture, threshold_moisture, fertiliser, threshold_fertilizer ORDER BY sensor_label ';
     serviceHelper.log('trace', 'Connect to data store connection pool');
     const dbClient = await global.devicesDataClient.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get sensor values');
