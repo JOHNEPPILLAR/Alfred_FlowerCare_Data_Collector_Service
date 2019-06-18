@@ -1,12 +1,12 @@
 version: '3.5'
 
 services:
-
   alfred_flowercare_data_collector_service:
     build: .
     image: alfred_flowercare_data_collector_service:latest
     container_name: alfred_flowercare_data_collector_service
     restart: always
-    network_mode: "host"
+    network_mode: 'host'
     privileged: true
     hostname: alfred_flowercare_data_collector_service
+    command: npm run prod

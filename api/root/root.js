@@ -2,7 +2,7 @@
  * Import external libraries
  */
 const Skills = require('restify-router').Router;
-const elasticsearch = require('elasticsearch');
+const elasticsearch = require('@elastic/elasticsearch');
 const os = require('os');
 
 /**
@@ -38,31 +38,30 @@ function ping(req, res, next) {
     reply: 'pong',
   };
 
-  if (process.env.Environment === 'production') {
-    try {
-      const client = new elasticsearch.Client({
-        hosts: [process.env.ElasticSearch],
-      });
+  try {
+    const client = new elasticsearch.Client({
+      node: process.env.ElasticSearch,
+    });
 
-      const load = os.loadavg();
-      const currentDate = new Date();
-      const formatDate = currentDate.toISOString();
+    const load = os.loadavg();
+    const currentDate = new Date();
+    const formatDate = currentDate.toISOString();
 
-      client.index({
-        index: 'health',
-        type: 'health',
-        body: {
-          time: formatDate,
-          hostname: os.hostname(),
-          mem_free: os.freemem(),
-          mem_total: os.totalmem(),
-          mem_percent: (os.freemem() * 100) / os.totalmem(),
-          cpu: Math.min(Math.floor((load[0] * 100) / os.cpus().length), 100),
-        },
-      });
-    } catch (err) {
-      serviceHelper.log('error', err.message);
-    }
+    client.index({
+      index: 'health',
+      type: 'health',
+      body: {
+        time: formatDate,
+        hostname: os.hostname(),
+        environment: process.env.Environment,
+        mem_free: os.freemem(),
+        mem_total: os.totalmem(),
+        mem_percent: (os.freemem() * 100) / os.totalmem(),
+        cpu: Math.min(Math.floor((load[0] * 100) / os.cpus().length), 100),
+      },
+    });
+  } catch (err) {
+    serviceHelper.log('error', err.message);
   }
 
   serviceHelper.sendResponse(res, true, ackJSON); // Send response back to caller

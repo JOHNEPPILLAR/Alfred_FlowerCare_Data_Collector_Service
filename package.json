@@ -4,21 +4,21 @@
   "description": "ALFRED - FlowerCare data Collector Service",
   "main": "lib/server.js",
   "scripts": {
-    "start": "node lib/server.js | pino-elasticsearch -i alfred -H 192.168.1.4 -l info",
-    "dev": "nodemon lib/server.js"
+    "prod": "node lib/server.js | pino-elasticsearch --node http://192.168.1.4:9200 -l info -i alfred",
+    "test": "nodemon lib/server.js"
   },
   "author": "JP",
   "dependencies": {
+    "@elastic/elasticsearch": "^7.1.0",
     "@abandonware/noble": "^1.9.2-2",
     "dateformat": "^3.0.3",
     "dotenv": "^8.0.0",
-    "elasticsearch": "^16.1.1",
     "fs": "^0.0.2",
     "ip": "^1.1.5",
     "os": "^0.1.1",
     "pg": "^7.11.0",
     "pino": "^5.12.6",
-    "pino-pretty": "^3.1.0",
+    "pino-pretty": "^3.2.0",
     "pure-uuid": "^1.5.7",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",

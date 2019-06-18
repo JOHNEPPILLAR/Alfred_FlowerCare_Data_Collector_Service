@@ -17,8 +17,6 @@ RUN npm update \
 	&& npm install --production \
 	&& npm install pino-elasticsearch -g
 
-CMD [ "npm", "start" ]
-
 HEALTHCHECK --start-period=60s --interval=10s --timeout=10s --retries=6 CMD ["./healthcheck.sh"]
 
 EXPOSE 3984
