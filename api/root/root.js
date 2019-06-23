@@ -60,6 +60,7 @@ function ping(req, res, next) {
         cpu: Math.min(Math.floor((load[0] * 100) / os.cpus().length), 100),
       },
     });
+    client.close();
   } catch (err) {
     serviceHelper.log('error', err.message);
   }
