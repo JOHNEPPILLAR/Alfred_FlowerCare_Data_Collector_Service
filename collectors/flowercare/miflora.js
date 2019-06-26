@@ -18,6 +18,10 @@ class MiFlora {
       if (state !== 'poweredOn') {
         noble.stopScanning();
       }
+      if (state === 'poweredOff') {
+        this.state = null;
+        this.init();
+      }
     });
     noble.once('scanStart', () => {
       serviceHelper.log('trace', 'Discovery started');
@@ -106,6 +110,7 @@ class MiFlora {
     this.returnVal = new Promise((resolve) => {
       noble.removeAllListeners('discover');
       noble.removeAllListeners('stateChange');
+      noble.removeAllListeners();
       resolve();
     });
     return this.returnVal;

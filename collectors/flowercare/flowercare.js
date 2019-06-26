@@ -70,39 +70,6 @@ exports.getFlowerCareData = async function getFlowerCareData() {
         serviceHelper.log('error', err.message);
       }
     });
-
-    /*
-    const processItems = async function processItems(counter) {
-      const deviceData = {};
-      serviceHelper.log('trace', `Getting sensor data for device: ${devices[counter].address}`);
-      try {
-        const baseData = await devices[counter].query();
-        deviceData.address = baseData.address;
-        deviceData.type = baseData.type;
-        deviceData.battery = baseData.firmwareInfo.battery;
-        deviceData.temperature = baseData.sensorValues.temperature;
-        deviceData.lux = baseData.sensorValues.lux;
-        deviceData.moisture = baseData.sensorValues.moisture;
-        deviceData.fertility = baseData.sensorValues.fertility;
-
-        serviceHelper.log('trace', `Disconnect device: ${baseData.address}`);
-        devices[counter].disconnect();
-
-        await saveDeviceData(deviceData); // Save the device data
-      } catch (err) {
-        serviceHelper.log('error', err.message);
-      }
-
-      console.log(counter + '-'+ devices.length)
-      console.log((counter + 1) + '-'+ devices.length)
-
-      if ((counter + 1) < devices.length) {
-        processItems(counter + 1); // Call recursive function to process next device
-      }
-    };
-    await processItems(0);
-    devices = null; // De-allocate devices
-    */
   } catch (err) {
     serviceHelper.log('error', err.message);
   }
