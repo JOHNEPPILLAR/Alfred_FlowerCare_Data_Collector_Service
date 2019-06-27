@@ -1,3 +1,9 @@
+
+/**
+ * Import external libraries
+ */
+const { exec } = require('child_process');
+
 /**
  * Import helper libraries
  */
@@ -232,7 +238,7 @@ class MiFloraDevice {
       const deviceTimeout = setTimeout(() => {
         reject(new Error('query all values timeout'));
       }, timeout);
-      serviceHelper.log('trace', 'miflora-device', 'Querying all values');
+      serviceHelper.log('trace', 'Querying all values');
       try {
         const result = this.responseTemplate;
         result.firmwareInfo = await this.queryFirmwareInfo(true);
@@ -243,6 +249,14 @@ class MiFloraDevice {
       } catch (error) {
         serviceHelper.log('error', error.message);
         clearTimeout(deviceTimeout);
+        serviceHelper.log('info', 'Restarting BLE adaptor');
+        exec('sudo /etc/init.d/bluetooth restart', (err, stdout, stderr) => {
+          if (err) {
+            serviceHelper.log('error', `stderr: ${stderr}`);
+            return;
+          }
+          serviceHelper.log('info', `stdout: ${stdout}`);
+        });
         return reject(error);
       }
     });
