@@ -14,13 +14,9 @@ class MiFlora {
   constructor() {
     this.devices = {};
     noble.on('stateChange', (state) => {
-      serviceHelper.log('trace', `Adapter changed to ${state}`);
+      serviceHelper.log('info', `BLE adapter changed to ${state}`);
       if (state !== 'poweredOn') {
         noble.stopScanning();
-      }
-      if (state === 'poweredOff') {
-        this.state = null;
-        this.init();
       }
     });
     noble.once('scanStart', () => {

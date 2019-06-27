@@ -52,7 +52,7 @@ exports.getFlowerCareData = async function getFlowerCareData() {
       const deviceData = {};
       serviceHelper.log('trace', `Getting sensor data for device: ${device.address}`);
       try {
-        // device.connect();
+        device.connect();
         const baseData = await device.query();
         deviceData.address = baseData.address;
         deviceData.type = baseData.type;
