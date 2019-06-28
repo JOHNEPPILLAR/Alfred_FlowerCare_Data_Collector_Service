@@ -250,7 +250,7 @@ class MiFloraDevice {
         serviceHelper.log('error', error.message);
         clearTimeout(deviceTimeout);
         serviceHelper.log('info', 'Restarting BLE adaptor');
-        exec('sudo /etc/init.d/bluetooth restart', (err, stdout, stderr) => {
+        exec('/etc/init.d/bluetooth restart', (err, stdout, stderr) => {
           if (err) {
             serviceHelper.log('error', `stderr: ${stderr}`);
             return;
