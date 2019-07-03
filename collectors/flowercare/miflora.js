@@ -70,7 +70,7 @@ class MiFlora {
    */
   startScan() {
     return new Promise((resolve, reject) => {
-      const duration = 30000; // 30 seconds
+      const duration = 60000; // 60 seconds
 
       serviceHelper.log('trace', `Starting discovery with ${duration}ms duration`);
 

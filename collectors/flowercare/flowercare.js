@@ -42,20 +42,16 @@ async function saveDeviceData(DataValues) {
   }
 }
 
-exports.getFlowerCareData = async function getFlowerCareData() {
+exports.getFlowerCareData = async function getFlowerCareData(devices) {
   try {
-    const devices = await miflora.discover();
-    serviceHelper.log('trace', `Discovered: ${devices.length}`);
-
-    if (devices.length === 0) {
-      serviceHelper.log('info', 'No Flower Care devices found');
-      return;
-    }
-
     devices.forEach(async (device) => {
       const deviceData = {};
       serviceHelper.log('trace', `Getting sensor data for device: ${device.address}`);
       try {
+        serviceHelper.log('trace', `Connect to device: ${device.address}`);
+        await device.connect();
+
+        serviceHelper.log('trace', `Get sensor data from: ${device.address}`);
         const baseData = await device.query();
         deviceData.address = baseData.address;
         deviceData.type = baseData.type;
@@ -75,5 +71,17 @@ exports.getFlowerCareData = async function getFlowerCareData() {
     });
   } catch (err) {
     serviceHelper.log('error', err.message);
+  }
+};
+
+exports.getFlowerCareDevices = async function fnGetFlowerCareDevices() {
+  try {
+    const devices = await miflora.discover();
+    serviceHelper.log('trace', `Discovered: ${devices.length}`);
+    if (devices.length === 0) throw new Error('No Flower Care devices found');
+    return devices;
+  } catch (err) {
+    serviceHelper.log('error', err.message);
+    return err;
   }
 };

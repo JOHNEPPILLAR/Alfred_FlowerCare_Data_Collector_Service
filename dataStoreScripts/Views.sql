@@ -28,7 +28,7 @@ SELECT time,
 	moisture,
 	threshold_moisture
 FROM vw_plant_data
-WHERE moisture <= threshold_moisture
+WHERE moisture <= threshold_moisture AND time > NOW() - interval '1 hour'
 
 --DROP VIEW vw_fertiliser_plants;
 CREATE OR REPLACE VIEW vw_fertiliser_plants AS
