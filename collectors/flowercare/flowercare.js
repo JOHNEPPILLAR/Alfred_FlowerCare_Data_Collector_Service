@@ -49,10 +49,18 @@ exports.getFlowerCareData = async function getFlowerCareData(devices) {
       serviceHelper.log('trace', `Getting sensor data for device: ${device.address}`);
       try {
         serviceHelper.log('trace', `Connect to device: ${device.address}`);
-        await device.connect();
-
+        const connected = await device.connect();
+        if (connected instanceof Error) {
+          serviceHelper.log('trace', `Not able to connect to device: ${device.address}`);
+          return;
+        }
         serviceHelper.log('trace', `Get sensor data from: ${device.address}`);
         const baseData = await device.query();
+        if (baseData instanceof Error) {
+          serviceHelper.log('trace', `Not able to query device: ${device.address}`);
+          return;
+        }
+
         deviceData.address = baseData.address;
         deviceData.type = baseData.type;
         deviceData.battery = baseData.firmwareInfo.battery;
@@ -62,7 +70,7 @@ exports.getFlowerCareData = async function getFlowerCareData(devices) {
         deviceData.fertility = baseData.sensorValues.fertility;
 
         serviceHelper.log('trace', `Disconnect device: ${baseData.address}`);
-        device.disconnect();
+        await device.disconnect();
 
         await saveDeviceData(deviceData); // Save the device data
       } catch (err) {

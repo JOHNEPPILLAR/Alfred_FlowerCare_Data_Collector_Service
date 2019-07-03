@@ -1,9 +1,3 @@
-
-/**
- * Import external libraries
- */
-const { exec } = require('child_process');
-
 /**
  * Import helper libraries
  */
@@ -249,14 +243,6 @@ class MiFloraDevice {
       } catch (error) {
         serviceHelper.log('error', error.message);
         clearTimeout(deviceTimeout);
-        serviceHelper.log('info', 'Restarting BLE adaptor');
-        exec('/etc/init.d/bluetooth restart', (err, stdout, stderr) => {
-          if (err) {
-            serviceHelper.log('error', `stderr: ${stderr}`);
-            return;
-          }
-          serviceHelper.log('info', `stdout: ${stdout}`);
-        });
         return reject(error);
       }
     });
