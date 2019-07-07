@@ -1,12 +1,13 @@
 /**
  * Import external libraries
  */
-const miflora = require('./miflora.js');
-const { exec } = require('child_process');
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 
 /**
  * Import helper libraries
  */
+const miflora = require('./miflora.js');
 const serviceHelper = require('../../lib/helper.js');
 
 /**
@@ -41,6 +42,18 @@ async function saveDeviceData(DataValues) {
   } catch (err) {
     serviceHelper.log('error', err.message);
   }
+}
+
+async function blePowerOff() {
+  const { stdout, stderr } = await exec('sudo bluetoothctl power off');
+  serviceHelper.log('info', `stdout: ${stdout}`);
+  serviceHelper.log('error', `stderr: ${stderr}`);
+}
+
+async function blePowerOn() {
+  const { stdout, stderr } = await exec('sudo bluetoothctl power on');
+  serviceHelper.log('info', `stdout: ${stdout}`);
+  serviceHelper.log('error', `stderr: ${stderr}`);
 }
 
 exports.getFlowerCareData = async function getFlowerCareData(devices) {
@@ -81,23 +94,9 @@ exports.getFlowerCareData = async function getFlowerCareData(devices) {
         await saveDeviceData(deviceData); // Save the device data
       } catch (err) {
         serviceHelper.log('error', err.message);
-        serviceHelper.log('error', 'Restarting bluetooth adaptor');
-        exec('sudo bluetoothctl power off', (error, stdout, stderr) => {
-          if (error) {
-            serviceHelper.log('error', error.message);
-            serviceHelper.log('info', `stdout: ${stderr}`);
-            return;
-          }
-          serviceHelper.log('info', `stdout: ${stdout}`);
-        });
-        exec('sudo bluetoothctl power on', (error, stdout, stderr) => {
-          if (error) {
-            serviceHelper.log('error', error.message);
-            serviceHelper.log('info', `stdout: ${stderr}`);
-            return;
-          }
-          serviceHelper.log('info', `stdout: ${stdout}`);
-        });
+        serviceHelper.log('error', 'Restart bluetooth adaptor');
+        blePowerOff();
+        blePowerOn();
       }
     }
   } catch (err) {
