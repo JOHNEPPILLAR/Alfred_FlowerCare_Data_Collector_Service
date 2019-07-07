@@ -4,9 +4,11 @@
 const serviceHelper = require('../lib/helper.js');
 const flowerCare = require('./flowercare/flowercare.js');
 
+let devices;
+
 exports.collectData = async function FnCollectData() {
   try {
-    const devices = await flowerCare.getFlowerCareDevices(); // Get Flower Care devices
+    devices = await flowerCare.getFlowerCareDevices(); // Get Flower Care devices
     if (!(devices instanceof Error)) {
       await flowerCare.getFlowerCareData(devices); // Collect and store flower care device data
       setTimeout(async () => {
@@ -18,6 +20,7 @@ exports.collectData = async function FnCollectData() {
   }
 
   setTimeout(async () => {
-    await flowerCare.getFlowerCareDevices(); // Collect and store flower care device data
+    devices = null;
+    devices = await flowerCare.getFlowerCareDevices(); // Collect and store flower care device data
   }, 10800000); // Re-scan/discover devices every 3 hours
 };
