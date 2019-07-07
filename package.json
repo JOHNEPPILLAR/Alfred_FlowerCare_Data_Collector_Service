@@ -10,12 +10,12 @@
   "author": "JP",
   "dependencies": {
     "@abandonware/noble": "^1.9.2-2",
-    "@elastic/elasticsearch": "^7.1.0",
+    "@elastic/elasticsearch": "^7.2.0",
     "dateformat": "^3.0.3",
     "dotenv": "^8.0.0",
     "fs": "^0.0.2",
     "ip": "^1.1.5",
-    "npm-check-updates": "^3.1.13",
+    "npm-check-updates": "^3.1.15",
     "os": "^0.1.1",
     "pg": "^7.11.0",
     "pino": "^5.12.6",
@@ -24,7 +24,8 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "restify": "^8.3.3",
-    "restify-router": "^0.5.1"
+    "restify-router": "^0.5.1",
+    "child_process": "^1.0.2"
   },
   "devDependencies": {
     "eslint": "^6.0.1",

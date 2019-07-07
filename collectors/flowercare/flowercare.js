@@ -2,6 +2,7 @@
  * Import external libraries
  */
 const miflora = require('./miflora.js');
+const { exec } = require('child_process');
 
 /**
  * Import helper libraries
@@ -80,6 +81,23 @@ exports.getFlowerCareData = async function getFlowerCareData(devices) {
         await saveDeviceData(deviceData); // Save the device data
       } catch (err) {
         serviceHelper.log('error', err.message);
+        serviceHelper.log('error', 'Restarting bluetooth adaptor');
+        exec('sudo bluetoothctl power off', (error, stdout, stderr) => {
+          if (error) {
+            serviceHelper.log('error', error.message);
+            serviceHelper.log('info', `stdout: ${stderr}`);
+            return;
+          }
+          serviceHelper.log('info', `stdout: ${stdout}`);
+        });
+        exec('sudo bluetoothctl power on', (error, stdout, stderr) => {
+          if (error) {
+            serviceHelper.log('error', error.message);
+            serviceHelper.log('info', `stdout: ${stderr}`);
+            return;
+          }
+          serviceHelper.log('info', `stdout: ${stdout}`);
+        });
       }
     }
   } catch (err) {
