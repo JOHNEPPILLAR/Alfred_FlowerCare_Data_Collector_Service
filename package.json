@@ -17,10 +17,10 @@
     "dotenv": "^8.0.0",
     "fs": "^0.0.2",
     "ip": "^1.1.5",
-    "npm-check-updates": "^3.1.18",
+    "npm-check-updates": "^3.1.20",
     "os": "^0.1.1",
     "pg": "^7.11.0",
-    "pino": "^5.12.6",
+    "pino": "^5.13.0",
     "pino-pretty": "^3.2.0",
     "pure-uuid": "^1.5.7",
     "request": "^2.88.0",
@@ -31,6 +31,6 @@
   "devDependencies": {
     "eslint": "^6.0.1",
     "eslint-config-airbnb-base": "^13.2.0",
-    "eslint-plugin-import": "^2.18.0"
+    "eslint-plugin-import": "^2.18.1"
   }
 }
