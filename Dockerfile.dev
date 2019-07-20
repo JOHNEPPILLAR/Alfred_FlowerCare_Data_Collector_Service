@@ -1,4 +1,4 @@
-FROM node:12
+FROM node:11
 
 RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/London > /etc/timezone \
 	&& apt-get update -y \
@@ -15,7 +15,5 @@ RUN mv certs/alfred_flowercare_data_collector_service-key.pem certs/server.key \
 
 RUN npm install nodemon \
 	&& npm install
-
-HEALTHCHECK --start-period=60s --interval=10s --timeout=10s --retries=6 CMD ["./healthcheck.sh"]
 
 EXPOSE 3978
