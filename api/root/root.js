@@ -30,42 +30,48 @@ const skill = new Skills();
  *   }
  *
  */
-function ping(req, res, next) {
+async function ping(req, res, next) {
   serviceHelper.log('trace', 'Ping API called');
 
   const ackJSON = {
     service: process.env.ServiceName,
     reply: 'pong',
   };
+  serviceHelper.sendResponse(res, true, ackJSON); // Send response back to caller
 
-  try {
-    const client = new elasticsearch.Client({
-      node: process.env.ElasticSearch,
-    });
+  const client = new elasticsearch.Client({
+    node: process.env.ElasticSearch,
+  });
 
-    const load = os.loadavg();
-    const currentDate = new Date();
-    const formatDate = currentDate.toISOString();
-
-    client.index({
-      index: 'health',
-      type: 'health',
-      body: {
-        time: formatDate,
-        hostname: os.hostname(),
-        environment: process.env.Environment,
-        mem_free: os.freemem(),
-        mem_total: os.totalmem(),
-        mem_percent: (os.freemem() * 100) / os.totalmem(),
-        cpu: Math.min(Math.floor((load[0] * 100) / os.cpus().length), 100),
-      },
-    });
-    client.close();
-  } catch (err) {
-    serviceHelper.log('error', err.message);
+  if (client instanceof Error || client.Connection === undefined) {
+    serviceHelper.log('error', 'Unable to connect to ELK');
+    return;
   }
 
-  serviceHelper.sendResponse(res, true, ackJSON); // Send response back to caller
+  const load = os.loadavg();
+  const currentDate = new Date();
+  const formatDate = currentDate.toISOString();
+
+  const results = await client.index({
+    index: 'health',
+    type: 'health',
+    body: {
+      time: formatDate,
+      hostname: os.hostname(),
+      environment: process.env.Environment,
+      mem_free: os.freemem(),
+      mem_total: os.totalmem(),
+      mem_percent: (os.freemem() * 100) / os.totalmem(),
+      cpu: Math.min(Math.floor((load[0] * 100) / os.cpus().length), 100),
+    },
+  });
+
+  if (results instanceof Error) {
+    serviceHelper.log('error', results.message);
+  }
+
+  await client.close();
+
   next();
 }
 skill.get('/ping', ping);
