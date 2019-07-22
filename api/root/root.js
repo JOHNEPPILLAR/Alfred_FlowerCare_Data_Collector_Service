@@ -43,7 +43,7 @@ async function ping(req, res, next) {
     node: process.env.ElasticSearch,
   });
 
-  if (client instanceof Error || client.Connection === undefined) {
+  if (client instanceof Error) {
     serviceHelper.log('error', 'Unable to connect to ELK');
     return;
   }
