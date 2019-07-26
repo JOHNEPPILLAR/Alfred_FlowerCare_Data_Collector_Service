@@ -3,7 +3,8 @@ FROM node:11
 RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/London > /etc/timezone \
 	&& apt-get update -y \
 	&& apt-get install -yqq \
-	&& apt-get install -y build-essential usbutils git bluetooth bluez libbluetooth-dev libudev-dev \
+	&& apt-get install -y build-essential usbutils git bluetooth bluez libbluetooth-dev libudev-dev libcap2-bin \
+	&& setcap cap_net_raw+eip $(eval readlink -f `which node`) \
 	&& mkdir -p /home/nodejs/app
 
 WORKDIR /home/nodejs/app
