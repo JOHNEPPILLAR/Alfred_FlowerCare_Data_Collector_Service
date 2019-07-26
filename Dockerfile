@@ -4,7 +4,6 @@ RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/Lond
 	&& apt-get update -y \
 	&& apt-get install -yqq \
 	&& apt-get install -y build-essential usbutils git bluetooth bluez libbluetooth-dev libudev-dev libcap2-bin \
-	&& setcap cap_net_raw+eip $(eval readlink -f `which node`) \
 	&& mkdir -p /home/nodejs/app
 
 WORKDIR /home/nodejs/app
@@ -17,6 +16,8 @@ RUN mv certs/alfred_flowercare_data_collector_service-key.pem certs/server.key \
 RUN npm update \
 	&& npm install --production \
 	&& npm install pino-elasticsearch -g
+
+RUN setcap cap_net_raw+eip $(eval readlink -f `which node`)
 
 HEALTHCHECK --start-period=60s --interval=10s --timeout=10s --retries=6 CMD ["./healthcheck.sh"]
 

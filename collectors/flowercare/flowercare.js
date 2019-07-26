@@ -45,13 +45,13 @@ async function saveDeviceData(DataValues) {
 }
 
 async function blePowerOff() {
-  const { stdout, stderr } = await exec('sudo bluetoothctl power off');
+  const { stdout, stderr } = await exec('bluetoothctl power off');
   serviceHelper.log('info', `stdout: ${stdout}`);
   serviceHelper.log('error', `stderr: ${stderr}`);
 }
 
 async function blePowerOn() {
-  const { stdout, stderr } = await exec('sudo bluetoothctl power on');
+  const { stdout, stderr } = await exec('bluetoothctl power on');
   serviceHelper.log('info', `stdout: ${stdout}`);
   serviceHelper.log('error', `stderr: ${stderr}`);
 }
@@ -94,9 +94,9 @@ exports.getFlowerCareData = async function getFlowerCareData(devices) {
         await saveDeviceData(deviceData); // Save the device data
       } catch (err) {
         serviceHelper.log('error', err.message);
-        serviceHelper.log('error', 'Restart bluetooth adaptor');
-        blePowerOff();
-        blePowerOn();
+        // serviceHelper.log('error', 'Restart bluetooth adaptor');
+        // blePowerOff();
+        // blePowerOn();
       }
     }
   } catch (err) {
