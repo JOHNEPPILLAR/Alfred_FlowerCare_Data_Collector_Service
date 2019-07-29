@@ -39,6 +39,7 @@ async function ping(req, res, next) {
   };
   serviceHelper.sendResponse(res, true, ackJSON); // Send response back to caller
 
+  /*
   const client = new elasticsearch.Client({
     node: process.env.ElasticSearch,
   });
@@ -71,6 +72,7 @@ async function ping(req, res, next) {
   }
 
   await client.close();
+*/
 
   next();
 }
