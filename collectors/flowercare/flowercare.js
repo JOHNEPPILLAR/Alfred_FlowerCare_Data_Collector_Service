@@ -1,14 +1,52 @@
 /**
  * Import external libraries
  */
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
+require('dotenv').config({ path: '../../.env' });
+
+const { Pool } = require('pg');
 
 /**
  * Import helper libraries
  */
 const miflora = require('./miflora.js');
 const serviceHelper = require('../../lib/helper.js');
+
+// Data base connection pool
+const devicesDataClient = new Pool({
+  host: process.env.DataStore,
+  database: 'devices',
+  user: process.env.DataStoreUser,
+  password: process.env.DataStoreUserPassword,
+  port: 5432,
+});
+
+/**
+ * Stop server if process close event is issued
+ */
+async function cleanExit() {
+  serviceHelper.log('trace', 'Child Process stopping');
+  serviceHelper.log('trace', 'Closing the data store pools');
+  try {
+    await devicesDataClient.end();
+  } catch (err) {
+    serviceHelper.log('trace', 'Failed to close the data store connection');
+  }
+  serviceHelper.log('trace', 'Exit child process');
+  process.exit(); // Exit process
+}
+process.on('SIGINT', () => {
+  cleanExit();
+});
+process.on('SIGTERM', () => {
+  cleanExit();
+});
+process.on('SIGUSR2', () => {
+  cleanExit();
+});
+process.on('uncaughtException', (err) => {
+  if (err) serviceHelper.log('error', err.message); // log the error
+  cleanExit();
+});
 
 /**
  * Save data to data store
@@ -28,7 +66,7 @@ async function saveDeviceData(DataValues) {
 
   try {
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    const dbClient = await global.devicesDataClient.connect(); // Connect to data store
+    const dbClient = await devicesDataClient.connect(); // Connect to data store
     serviceHelper.log('trace', `Save sensor values for device: ${SQLValues[2]}`);
     const results = await dbClient.query(SQL, SQLValues);
     serviceHelper.log('trace', 'Release the data store connection back to the pool');
@@ -44,19 +82,7 @@ async function saveDeviceData(DataValues) {
   }
 }
 
-async function blePowerOff() {
-  const { stdout, stderr } = await exec('bluetoothctl power off');
-  serviceHelper.log('info', `stdout: ${stdout}`);
-  serviceHelper.log('error', `stderr: ${stderr}`);
-}
-
-async function blePowerOn() {
-  const { stdout, stderr } = await exec('bluetoothctl power on');
-  serviceHelper.log('info', `stdout: ${stdout}`);
-  serviceHelper.log('error', `stderr: ${stderr}`);
-}
-
-exports.getFlowerCareData = async function getFlowerCareData(devices) {
+async function getFlowerCareData(devices) {
   try {
     // eslint-disable-next-line no-restricted-syntax
     for (const device of devices) {
@@ -94,24 +120,31 @@ exports.getFlowerCareData = async function getFlowerCareData(devices) {
         await saveDeviceData(deviceData); // Save the device data
       } catch (err) {
         serviceHelper.log('error', err.message);
-        // serviceHelper.log('error', 'Restart bluetooth adaptor');
-        // blePowerOff();
-        // blePowerOn();
       }
     }
   } catch (err) {
     serviceHelper.log('error', err.message);
   }
-};
+}
 
-exports.getFlowerCareDevices = async function fnGetFlowerCareDevices() {
+async function getFlowerCareDevices() {
+  serviceHelper.log('trace', 'Discover devices');
   try {
     const devices = await miflora.discover();
     serviceHelper.log('trace', `Discovered: ${devices.length}`);
-    if (devices.length === 0) throw new Error('No Flower Care devices found');
-    return devices;
+    if (devices.length === 0) {
+      serviceHelper.log('error', 'No Flower Care devices found');
+      cleanExit();
+    } else {
+      serviceHelper.log('trace', 'Process devices');
+      await getFlowerCareData(devices);
+      cleanExit();
+    }
   } catch (err) {
     serviceHelper.log('error', err.message);
     return err;
   }
-};
+  return true;
+}
+
+getFlowerCareDevices();
