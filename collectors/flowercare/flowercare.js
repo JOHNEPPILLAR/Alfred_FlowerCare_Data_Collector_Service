@@ -82,53 +82,53 @@ async function saveDeviceData(DataValues) {
   }
 }
 
-async function getFlowerCareData() {
+async function getFlowerCareData(device) {
   try {
-    const devices = await miflora.discover();
-    serviceHelper.log('trace', `Discovered: ${devices.length}`);
-
-    // eslint-disable-next-line no-restricted-syntax
-    for (const device of devices) {
-      const deviceData = {};
-      serviceHelper.log('trace', `Getting sensor data for device: ${device.address}`);
-      try {
-        serviceHelper.log('trace', `Connect to device: ${device.address}`);
-        // eslint-disable-next-line no-await-in-loop
-        const connected = await device.connect();
-        if (connected instanceof Error) {
-          serviceHelper.log('trace', `Not able to connect to device: ${device.address}`);
-          return;
-        }
-        serviceHelper.log('trace', `Get sensor data from: ${device.address}`);
-        // eslint-disable-next-line no-await-in-loop
-        const baseData = await device.query();
-        if (baseData instanceof Error) {
-          serviceHelper.log('trace', `Not able to query device: ${device.address}`);
-          return;
-        }
-
-        deviceData.address = baseData.address;
-        deviceData.type = baseData.type;
-        deviceData.battery = baseData.firmwareInfo.battery;
-        deviceData.temperature = baseData.sensorValues.temperature;
-        deviceData.lux = baseData.sensorValues.lux;
-        deviceData.moisture = baseData.sensorValues.moisture;
-        deviceData.fertility = baseData.sensorValues.fertility;
-
-        serviceHelper.log('trace', `Disconnect device: ${baseData.address}`);
-        // eslint-disable-next-line no-await-in-loop
-        await device.disconnect();
-
-        // eslint-disable-next-line no-await-in-loop
-        await saveDeviceData(deviceData); // Save the device data
-      } catch (err) {
-        serviceHelper.log('error', err.message);
+    const deviceData = {};
+    serviceHelper.log('trace', `Getting sensor data for device: ${device.address}`);
+    try {
+      serviceHelper.log('trace', `Connect to device: ${device.address}`);
+      const connected = await device.connect();
+      if (connected instanceof Error) {
+        serviceHelper.log('trace', `Not able to connect to device: ${device.address}`);
+        return;
       }
+      serviceHelper.log('trace', `Get sensor data from: ${device.address}`);
+      const baseData = await device.query();
+      if (baseData instanceof Error) {
+        serviceHelper.log('trace', `Not able to query device: ${device.address}`);
+        return;
+      }
+
+      deviceData.address = baseData.address;
+      deviceData.type = baseData.type;
+      deviceData.battery = baseData.firmwareInfo.battery;
+      deviceData.temperature = baseData.sensorValues.temperature;
+      deviceData.lux = baseData.sensorValues.lux;
+      deviceData.moisture = baseData.sensorValues.moisture;
+      deviceData.fertility = baseData.sensorValues.fertility;
+
+      serviceHelper.log('trace', `Disconnect device: ${baseData.address}`);
+      await device.disconnect();
+      await saveDeviceData(deviceData); // Save the device data
+    } catch (err) {
+      serviceHelper.log('error', err.message);
     }
-    cleanExit();
   } catch (err) {
     serviceHelper.log('error', err.message);
   }
 }
 
-getFlowerCareData();
+async function getFlowerCareDevices() {
+  const devices = await miflora.discover();
+  serviceHelper.log('trace', `Discovered: ${devices.length}`);
+
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const device of devices) {
+    await getFlowerCareData(device);
+  }
+
+  cleanExit();
+}
+
+getFlowerCareDevices();
