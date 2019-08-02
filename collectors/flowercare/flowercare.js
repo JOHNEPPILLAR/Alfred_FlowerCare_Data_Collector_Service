@@ -82,8 +82,11 @@ async function saveDeviceData(DataValues) {
   }
 }
 
-async function getFlowerCareData(devices) {
+async function getFlowerCareData() {
   try {
+    const devices = await miflora.discover();
+    serviceHelper.log('trace', `Discovered: ${devices.length}`);
+
     // eslint-disable-next-line no-restricted-syntax
     for (const device of devices) {
       const deviceData = {};
@@ -122,29 +125,10 @@ async function getFlowerCareData(devices) {
         serviceHelper.log('error', err.message);
       }
     }
+    cleanExit();
   } catch (err) {
     serviceHelper.log('error', err.message);
   }
 }
 
-async function getFlowerCareDevices() {
-  serviceHelper.log('trace', 'Discover devices');
-  try {
-    const devices = await miflora.discover();
-    serviceHelper.log('trace', `Discovered: ${devices.length}`);
-    if (devices.length === 0) {
-      serviceHelper.log('error', 'No Flower Care devices found');
-      cleanExit();
-    } else {
-      serviceHelper.log('trace', 'Process devices');
-      await getFlowerCareData(devices);
-      cleanExit();
-    }
-  } catch (err) {
-    serviceHelper.log('error', err.message);
-    return err;
-  }
-  return true;
-}
-
-getFlowerCareDevices();
+getFlowerCareData();
