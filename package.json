@@ -32,5 +32,8 @@
     "eslint": "^6.0.1",
     "eslint-config-airbnb-base": "^13.2.0",
     "eslint-plugin-import": "^2.18.1"
+  },
+  "resolutions": {
+    "@abandonware/noble/@abandonware/bluetooth-hci-socket": "https://github.com/abandonware/node-bluetooth-hci-socket#5"
   }
 }
