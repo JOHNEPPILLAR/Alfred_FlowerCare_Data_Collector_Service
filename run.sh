@@ -8,6 +8,7 @@ kill -9 $(lsof -sTCP:LISTEN -i:3978 -t)
 rm -rf node_modules
 ncu -u
 npm update
+npx npm-force-resolutions
 npm install
 npm audit
 snyk test

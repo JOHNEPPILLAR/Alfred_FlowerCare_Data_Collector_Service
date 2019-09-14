@@ -72,7 +72,10 @@ class MiFlora {
     return new Promise((resolve, reject) => {
       const duration = 60000; // 60 seconds
 
-      serviceHelper.log('trace', `Starting discovery with ${duration}ms duration`);
+      serviceHelper.log(
+        'trace',
+        `Starting discovery with ${duration}ms duration`,
+      );
 
       setTimeout(() => {
         serviceHelper.log('trace', 'Duration reached, stopping discovery');
@@ -80,13 +83,18 @@ class MiFlora {
       }, duration);
 
       noble.on('discover', (peripheral) => {
-        const deviceAddress = MiFloraDevice.normaliseAddress(peripheral.address);
+        const deviceAddress = MiFloraDevice.normaliseAddress(
+          peripheral.address,
+        );
         const exisitingDevice = this.devices[deviceAddress];
         if (!exisitingDevice) {
           const newDevice = MiFloraDevice.from(peripheral);
           if (newDevice) {
             this.devices[deviceAddress] = newDevice;
-            serviceHelper.log('trace', `Discovered ${newDevice.type} @ ${newDevice.address}`);
+            serviceHelper.log(
+              'trace',
+              `Discovered ${newDevice.type} @ ${newDevice.address}`,
+            );
           }
         }
       });
