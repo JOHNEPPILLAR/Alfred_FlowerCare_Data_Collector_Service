@@ -124,7 +124,8 @@ async function getFlowerCareDevices() {
   serviceHelper.log('trace', `Discovered: ${devices.length}`);
 
   // eslint-disable-next-line no-restricted-syntax
-  for await (const device of devices) {
+  for (const device of devices) {
+    // eslint-disable-next-line no-await-in-loop
     await getFlowerCareData(device);
   }
 
