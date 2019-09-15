@@ -33,6 +33,6 @@
     "eslint-plugin-import": "^2.18.2"
   },
   "resolutions": {
-    "@abandonware/noble/@abandonware/bluetooth-hci-socket": "git://github.com/abandonware/node-bluetooth-hci-socket#5"
+    "@abandonware/bluetooth-hci-socket": "git://github.com/abandonware/node-bluetooth-hci-socket#5"
   }
 }
