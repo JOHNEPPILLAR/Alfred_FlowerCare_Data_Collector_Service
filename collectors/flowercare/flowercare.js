@@ -8,8 +8,8 @@ const { Pool } = require('pg');
 /**
  * Import helper libraries
  */
+const serviceHelper = require('alfred_helper');
 const miflora = require('./miflora.js');
-const serviceHelper = require('../../lib/helper.js');
 
 // Data base connection pool
 const devicesDataClient = new Pool({

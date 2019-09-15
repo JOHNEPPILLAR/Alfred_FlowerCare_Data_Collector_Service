@@ -1,7 +1,7 @@
 /**
  * Import helper libraries
  */
-const serviceHelper = require('../../lib/helper.js');
+const serviceHelper = require('alfred_helper');
 
 const UUID_SERVICE_XIAOMI = 'fe95';
 const UUID_SERVICE_DATA = '0000120400001000800000805f9b34fb';

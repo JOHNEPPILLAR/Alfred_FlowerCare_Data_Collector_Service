@@ -6,7 +6,7 @@ const { fork } = require('child_process');
 /**
  * Import helper libraries
  */
-const serviceHelper = require('../lib/helper.js');
+const serviceHelper = require('alfred_helper');
 
 const timerInterval = 5 * 60 * 1000; // 5 minutes
 
