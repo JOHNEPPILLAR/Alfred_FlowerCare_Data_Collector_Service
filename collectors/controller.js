@@ -1,7 +1,7 @@
 /**
  * Import external libraries
  */
-const { fork } = require('child_process');
+const { fork, exec } = require('child_process');
 
 /**
  * Import helper libraries
@@ -13,10 +13,19 @@ const timerInterval = 5 * 60 * 1000; // 5 minutes
 exports.processFlowerCareDevices = function fnProcessFlowerCareDevices() {
   try {
     // Restart BLE adaptor
-    // serviceHelper.log('trace', 'Power-down bluetooth adapter');
-    // fork('hciconfig hci0 down');
-    // serviceHelper.log('trace', 'Power-up bluetooth adapter');
-    // fork('hciconfig hci0 up');
+    serviceHelper.log('trace', 'Power-down bluetooth adapter');
+    exec('hciconfig hci0 down', (err, stdout, stderr) => {
+      if (err) serviceHelper.log('error', 'node couldn\'t execute the hciconfig hci0 down command');
+      serviceHelper.log('trace', `stdout: ${stdout}`);
+      serviceHelper.log('trace', `stderr: ${stderr}`);
+    });
+
+    serviceHelper.log('trace', 'Power-up bluetooth adapter');
+    exec('hciconfig hci0 up', (err, stdout, stderr) => {
+      if (err) serviceHelper.log('error', 'node couldn\'t execute the hciconfig hci0 up command');
+      serviceHelper.log('trace', `stdout: ${stdout}`);
+      serviceHelper.log('trace', `stderr: ${stderr}`);
+    });
 
     serviceHelper.log('trace', 'Starting new client process');
     const childProcess = fork('./collectors/flowercare/flowercare.js');
