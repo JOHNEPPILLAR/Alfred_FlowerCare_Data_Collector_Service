@@ -57,23 +57,23 @@ async function all(req, res, next) {
   try {
     switch (durationSpan) {
       case 'month':
-        SQL = `SELECT time_bucket('6 hours', time) AS timeofday, avg(sunlight) as sunlight, plant_name, avg(moisture) as moisture, avg(fertiliser) as fertiliser FROM garden_sensor INNER JOIN garden_sensor_plant ON garden_sensor.address = garden_sensor_plant.address WHERE garden_sensor.address='${gardenSensorAddress}' and time > NOW() - interval '1 month' GROUP BY timeofday, plant_name ORDER BY timeofday DESC`;
+        SQL = `SELECT time_bucket('6 hours', time) AS timeofday, avg(sunlight) as sunlight, plant_name, avg(moisture) as moisture, avg(fertiliser) as fertiliser, min(battery) as battery FROM garden_sensor INNER JOIN garden_sensor_plant ON garden_sensor.address = garden_sensor_plant.address WHERE garden_sensor.address='${gardenSensorAddress}' and time > NOW() - interval '1 month' GROUP BY timeofday, plant_name ORDER BY timeofday DESC`;
         durationTitle = 'Last month';
         break;
       case 'week':
-        SQL = `SELECT time_bucket('3 hours', time) AS timeofday, avg(sunlight) as sunlight, plant_name, avg(moisture) as moisture, avg(fertiliser) as fertiliser FROM garden_sensor INNER JOIN garden_sensor_plant ON garden_sensor.address = garden_sensor_plant.address WHERE garden_sensor.address='${gardenSensorAddress}' and time > NOW() - interval '1 week' GROUP BY timeofday, plant_name ORDER BY timeofday DESC`;
+        SQL = `SELECT time_bucket('3 hours', time) AS timeofday, avg(sunlight) as sunlight, plant_name, avg(moisture) as moisture, avg(fertiliser) as fertiliser, min(battery) as battery FROM garden_sensor INNER JOIN garden_sensor_plant ON garden_sensor.address = garden_sensor_plant.address WHERE garden_sensor.address='${gardenSensorAddress}' and time > NOW() - interval '1 week' GROUP BY timeofday, plant_name ORDER BY timeofday DESC`;
         durationTitle = 'Last weeks';
         break;
       case 'day':
-        SQL = `SELECT time_bucket('30 minutes', time) AS timeofday, plant_name, avg(sunlight) as sunlight, avg(moisture) as moisture, avg(fertiliser) as fertiliser FROM garden_sensor INNER JOIN garden_sensor_plant ON garden_sensor.address = garden_sensor_plant.address WHERE garden_sensor.address='${gardenSensorAddress}' and time > NOW() - interval '1 day' GROUP BY timeofday, plant_name ORDER BY timeofday DESC`;
+        SQL = `SELECT time_bucket('30 minutes', time) AS timeofday, plant_name, avg(sunlight) as sunlight, avg(moisture) as moisture, avg(fertiliser) as fertiliser, min(battery) as battery FROM garden_sensor INNER JOIN garden_sensor_plant ON garden_sensor.address = garden_sensor_plant.address WHERE garden_sensor.address='${gardenSensorAddress}' and time > NOW() - interval '1 day' GROUP BY timeofday, plant_name ORDER BY timeofday DESC`;
         durationTitle = 'Today';
         break;
       case 'hour':
-        SQL = `SELECT time_bucket('1 minute', time) AS timeofday, plant_name, avg(sunlight) as sunlight, avg(moisture) as moisture, avg(fertiliser) as fertiliser FROM garden_sensor INNER JOIN garden_sensor_plant ON garden_sensor.address = garden_sensor_plant.address WHERE garden_sensor.address='${gardenSensorAddress}' and time > NOW() - interval '1 hour' GROUP BY timeofday, plant_name ORDER BY timeofday DESC`;
+        SQL = `SELECT time_bucket('1 minute', time) AS timeofday, plant_name, avg(sunlight) as sunlight, avg(moisture) as moisture, avg(fertiliser) as fertiliser, min(battery) as battery FROM garden_sensor INNER JOIN garden_sensor_plant ON garden_sensor.address = garden_sensor_plant.address WHERE garden_sensor.address='${gardenSensorAddress}' and time > NOW() - interval '1 hour' GROUP BY timeofday, plant_name ORDER BY timeofday DESC`;
         durationTitle = 'Last hour';
         break;
       default:
-        SQL = `SELECT time_bucket('1 minute', time) AS timeofday, plant_name, avg(sunlight) as sunlight, avg(moisture) as moisture, avg(fertiliser) as fertiliser FROM garden_sensor INNER JOIN garden_sensor_plant ON garden_sensor.address = garden_sensor_plant.address WHERE garden_sensor.address='${gardenSensorAddress}' and time > NOW() - interval '1 hour' GROUP BY timeofday, plant_name ORDER BY timeofday DESC`;
+        SQL = `SELECT time_bucket('1 minute', time) AS timeofday, plant_name, avg(sunlight) as sunlight, avg(moisture) as moisture, avg(fertiliser) as fertiliser, min(battery) as battery FROM garden_sensor INNER JOIN garden_sensor_plant ON garden_sensor.address = garden_sensor_plant.address WHERE garden_sensor.address='${gardenSensorAddress}' and time > NOW() - interval '1 hour' GROUP BY timeofday, plant_name ORDER BY timeofday DESC`;
         durationTitle = 'Last hour';
         break;
     }
