@@ -11,10 +11,10 @@ const { Pool } = require('pg');
 /**
  * Import helper libraries
  */
-const serviceHelper = require('alfred_helper');
+const serviceHelper = require('alfred-helper');
+const devices = require('../collectors/controller.js');
 
-global.instanceTraceID = new UUID(4);
-global.callTraceID = null;
+global.APITraceID = '';
 
 // Data base connection pool
 global.devicesDataClient = new Pool({
@@ -52,14 +52,23 @@ server.use((req, res, next) => {
 });
 server.use((req, res, next) => {
   // Check for a trace id
-  if (typeof req.headers['trace-id'] === 'undefined') {
-    global.callTraceID = new UUID(4);
-  } // Generate new trace id
+  if (typeof req.headers['api-trace-id'] === 'undefined') {
+    global.APITraceID = new UUID(4);
+  } else {
+    global.APITraceID = req.headers['api-trace-id'];
+  }
 
   // Check for valid auth key
   if (req.headers['client-access-key'] !== process.env.ClientAccessKey) {
-    serviceHelper.log('warn', null, `Invaid client access key: ${req.headers.ClientAccessKey}`);
-    serviceHelper.sendResponse(res, 401, 'There was a problem authenticating you.');
+    serviceHelper.log(
+      'warn',
+      `Invaid client access key: ${req.headers.ClientAccessKey}`,
+    );
+    serviceHelper.sendResponse(
+      res,
+      401,
+      'There was a problem authenticating you.',
+    );
     return;
   }
   next();
@@ -78,7 +87,7 @@ server.on('uncaughtException', (req, res, route, err) => {
  * Configure API end points
  */
 require('../api/root/root.js').applyRoutes(server);
-require('../api/display/display.js').applyRoutes(server, '/display');
+require('../api/display/display.js').applyRoutes(server);
 
 /**
  * Stop server if process close event is issued
@@ -87,13 +96,18 @@ async function cleanExit() {
   serviceHelper.log('warn', 'Service stopping');
   serviceHelper.log('trace', 'Closing the data store pools');
   try {
-    await global.devicesDataClient.end();
+    // await global.devicesDataClient.end();
+    global.lightsDataClient
+      .end()
+      .then(() => serviceHelper.log('trace', 'client has disconnected'))
+      .catch((err) => serviceHelper.log('error', err.stack));
   } catch (err) {
     serviceHelper.log('trace', 'Failed to close the data store connection');
   }
   serviceHelper.log('warn', 'Close rest server');
   server.close(() => {
     // Ensure rest server is stopped
+    serviceHelper.log('warn', 'Exit the app');
     process.exit(); // Exit app
   });
 }
@@ -114,8 +128,6 @@ process.on('uncaughtException', (err) => {
 if (process.env.Mock === 'true') {
   serviceHelper.log('info', 'Mock enabled, will not collect plat data from sensors');
 } else {
-  // eslint-disable-next-line global-require
-  const devices = require('../collectors/controller.js');
   setTimeout(() => {
     devices.processFlowerCareDevices();
   }, 5000);

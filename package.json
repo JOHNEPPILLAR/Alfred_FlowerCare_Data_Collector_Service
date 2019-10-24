@@ -4,21 +4,21 @@
   "description": "ALFRED - FlowerCare data Collector Service",
   "main": "lib/server.js",
   "scripts": {
-    "prod": "node lib/server.js",
-    "test": "nodemon lib/server.js"
+    "prod": "node app/server/server.js",
+    "test": "nodemon app/server/server.js"
   },
   "author": "JP",
   "dependencies": {
-    "alfred_helper": "git://github.com/johneppillar/alfred_helper_lib",
+    "alfred-helper": "git://github.com/johneppillar/alfred_helper_lib",
     "@abandonware/noble": "^1.9.2-2",
     "child_process": "^1.0.2",
     "dateformat": "^3.0.3",
-    "dotenv": "^8.1.0",
+    "dotenv": "^8.2.0",
     "fs": "^0.0.2",
     "path": "^0.12.7",
     "pg": "^7.12.1",
-    "pino": "^5.13.3",
-    "pino-pretty": "^3.2.1",
+    "pino": "^5.13.5",
+    "pino-pretty": "^3.2.2",
     "pure-uuid": "^1.5.7",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
@@ -26,7 +26,7 @@
     "restify-router": "^0.5.1"
   },
   "devDependencies": {
-    "eslint": "^6.4.0",
+    "eslint": "^6.5.1",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2"
   },

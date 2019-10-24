@@ -2,12 +2,11 @@
  * Import external libraries
  */
 const Skills = require('restify-router').Router;
-const os = require('os');
 
 /**
  * Import helper libraries
  */
-const serviceHelper = require('alfred_helper');
+const serviceHelper = require('alfred-helper');
 
 const skill = new Skills();
 

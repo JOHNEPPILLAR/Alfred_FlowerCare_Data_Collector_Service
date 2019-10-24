@@ -6,13 +6,13 @@ const Skills = require('restify-router').Router;
 /**
  * Import helper libraries
  */
-const serviceHelper = require('alfred_helper');
+const serviceHelper = require('alfred-helper');
 
 const skill = new Skills();
 
 /**
- * @api {get} /all
- * @apiName all
+ * @api {get} /sensors
+ * @apiName sensors
  * @apiGroup Display
  *
  * @apiSuccessExample {json} Success-Response:
@@ -31,13 +31,13 @@ const skill = new Skills();
  *   }
  *
  * @apiErrorExample {json} Error-Response:
- *   HTTPS/1.1 400 Bad Request
+ *   HTTPS/1.1 500 Internal error
  *   {
  *     data: Error message
  *   }
  *
  */
-async function all(req, res, next) {
+async function sensors(req, res, next) {
   serviceHelper.log('trace', 'Display all garden sensor data API called');
 
   let durationSpan = null;
@@ -102,7 +102,7 @@ async function all(req, res, next) {
     next();
   }
 }
-skill.get('/all', all);
+skill.get('/sensors', sensors);
 
 /**
  * @api {get} /current
@@ -159,6 +159,6 @@ async function current(req, res, next) {
     next();
   }
 }
-skill.get('/current', current);
+skill.get('/sensors/current', current);
 
 module.exports = skill;

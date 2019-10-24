@@ -3,6 +3,6 @@
 set -x
 set -e
 
-node lib/healthcheck.js
+node app/server/healthcheck.js
 
 exit $?

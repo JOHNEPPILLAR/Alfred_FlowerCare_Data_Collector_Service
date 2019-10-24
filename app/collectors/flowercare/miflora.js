@@ -6,7 +6,7 @@ const noble = require('@abandonware/noble');
 /**
  * Import helper libraries
  */
-const serviceHelper = require('alfred_helper');
+const serviceHelper = require('alfred-helper');
 const MiFloraDevice = require('./miflora-device.js');
 
 const UUID_SERVICE_XIAOMI = 'fe95';
