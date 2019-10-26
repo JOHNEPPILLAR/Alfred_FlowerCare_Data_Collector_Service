@@ -13,8 +13,10 @@ const { Pool } = require('pg');
  */
 const serviceHelper = require('alfred-helper');
 const devices = require('../collectors/controller.js');
+const schedules = require('../schedules/controller.js');
 
 global.APITraceID = '';
+global.schedules = [];
 
 // Data base connection pool
 global.devicesDataClient = new Pool({
@@ -130,7 +132,8 @@ if (process.env.Mock === 'true') {
 } else {
   setTimeout(() => {
     devices.processFlowerCareDevices();
-  }, 5000);
+    schedules.setSchedule(true); // Setup garden schedules
+  }, 1000);
 }
 
 // Start service and listen to requests

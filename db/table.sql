@@ -19,3 +19,13 @@ CREATE TABLE garden_sensor_plant (
   threshold_moisture        DOUBLE PRECISION  NOT NULL,
   threshold_fertilizer      DOUBLE PRECISION  NOT NULL
 )
+
+CREATE TABLE garden_schedules (
+  id                 SERIAL            PRIMARY KEY,
+  type               INT               NOT NULL,
+  name               TEXT              NOT NULL,
+  hour               INT               NOT NULL,
+  minute             INT               NOT NULL,
+  ai_override        BOOLEAN           NOT NULL DEFAULT FALSE,
+  active             BOOLEAN           NOT NULL DEFAULT TRUE
+)
