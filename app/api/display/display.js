@@ -98,7 +98,7 @@ async function sensors(req, res, next) {
     next();
   } catch (err) {
     serviceHelper.log('error', err.message);
-    serviceHelper.sendResponse(res, false, err);
+    serviceHelper.sendResponse(res, null, err);
     next();
   }
 }
@@ -125,7 +125,7 @@ skill.get('/sensors', sensors);
  *   }
  *
  * @apiErrorExample {json} Error-Response:
- *   HTTPS/1.1 400 Bad Request
+ *   HTTPS/1.1 500 Internal error
  *   {
  *     data: Error message
  *   }
@@ -155,7 +155,7 @@ async function current(req, res, next) {
     next();
   } catch (err) {
     serviceHelper.log('error', err.message);
-    serviceHelper.sendResponse(res, false, err);
+    serviceHelper.sendResponse(res, null, err);
     next();
   }
 }
