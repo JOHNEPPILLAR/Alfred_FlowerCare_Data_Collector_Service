@@ -26,7 +26,7 @@ async function checkGardenWater() {
     await dbClient.release(); // Return data store connection back to pool
 
     if (needsWatering.rowCount === 0) {
-      serviceHelper.log('trace', 'Garden does not need watering');
+      serviceHelper.log('info', 'Garden does not need watering');
       return;
     } // Exit function as no data to process
 
@@ -186,7 +186,7 @@ exports.setup = async () => {
 
     if (results.rowCount === 0) {
       // Exit function as no data to process
-      serviceHelper.log('trace', 'No Water Garden timers are active');
+      serviceHelper.log('info', 'No Water Garden timers are active');
       return false;
     }
 
