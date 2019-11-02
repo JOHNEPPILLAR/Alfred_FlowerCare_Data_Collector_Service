@@ -1,13 +1,17 @@
 {
   "name": "alfred_flowercare_data_collector_service",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "ALFRED - FlowerCare data Collector Service",
-  "main": "lib/server.js",
+  "author": "JP",
+  "license": "MIT",
+  "snyk": true,
+  "main": "app/server/server.js",
   "scripts": {
     "prod": "node app/server/server.js",
-    "test": "nodemon app/server/server.js"
+    "test": "nodemon app/server/server.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
-  "author": "JP",
   "dependencies": {
     "alfred-helper": "git://github.com/johneppillar/alfred_helper_lib",
     "@abandonware/noble": "^1.9.2-2",
