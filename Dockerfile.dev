@@ -3,17 +3,20 @@ FROM node:10
 RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/London > /etc/timezone \
 	&& apt-get update -y \
 	&& apt-get install -yqq \
-    && apt-get install -y build-essential usbutils git bluetooth bluez libbluetooth-dev libudev-dev \
+	&& apt-get install -y build-essential usbutils git bluetooth bluez libbluetooth-dev libudev-dev libcap2-bin \
 	&& mkdir -p /home/nodejs/app
 
 WORKDIR /home/nodejs/app
 
 COPY . /home/nodejs/app
 
-RUN mv certs/alfred_flowercare_data_collector_service-key.pem certs/server.key \
-	&& mv certs/alfred_flowercare_data_collector_service.pem certs/server.crt 
+RUN mv certs/alfred_flowercare_data_collector_service.key certs/server.key \
+	&& mv certs/alfred_flowercare_data_collector_service.crt certs/server.crt 
 
-RUN npm install nodemon \
-	&& npm install
+RUN npm update \
+    && npm install nodemon \
+	&& npm install --production
+
+RUN setcap cap_net_raw+eip $(eval readlink -f `which node`)
 
 EXPOSE 3978

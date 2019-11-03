@@ -10,12 +10,11 @@ WORKDIR /home/nodejs/app
 
 COPY . /home/nodejs/app
 
-RUN mv certs/alfred_flowercare_data_collector_service-key.pem certs/server.key \
-	&& mv certs/alfred_flowercare_data_collector_service.pem certs/server.crt 
+RUN mv certs/alfred_flowercare_data_collector_service.key certs/server.key \
+	&& mv certs/alfred_flowercare_data_collector_service.crt certs/server.crt 
 
 RUN npm update \
-	&& npm install --production \
-	&& npm install pino-elasticsearch -g
+	&& npm install --production
 
 RUN setcap cap_net_raw+eip $(eval readlink -f `which node`)
 
