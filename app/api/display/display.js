@@ -87,18 +87,18 @@ async function sensors(req, res, next) {
 
     if (results.rowCount === 0) {
       serviceHelper.log('trace', 'No data to return');
-      serviceHelper.sendResponse(res, true, 'No data to return');
+      serviceHelper.sendResponse(res, 200, 'No data to return');
       return;
     }
     serviceHelper.log('trace', 'Return data back to caller');
     results.DurationTitle = durationTitle;
     results.rows.reverse();
     const returnData = results.rows;
-    serviceHelper.sendResponse(res, true, returnData);
+    serviceHelper.sendResponse(res, 200, returnData);
     next();
   } catch (err) {
     serviceHelper.log('error', err.message);
-    serviceHelper.sendResponse(res, null, err);
+    serviceHelper.sendResponse(res, 500, err);
     next();
   }
 }
@@ -144,18 +144,18 @@ async function current(req, res, next) {
 
     if (results.rowCount === 0) {
       serviceHelper.log('trace', 'No data exists in the last hour');
-      serviceHelper.sendResponse(res, false, 'No results');
+      serviceHelper.sendResponse(res, 200, 'No results');
       next();
       return;
     }
     serviceHelper.log('trace', 'Return data back to caller');
 
     const returnData = results.rows;
-    serviceHelper.sendResponse(res, true, returnData);
+    serviceHelper.sendResponse(res, 200, returnData);
     next();
   } catch (err) {
     serviceHelper.log('error', err.message);
-    serviceHelper.sendResponse(res, null, err);
+    serviceHelper.sendResponse(res, 500, err);
     next();
   }
 }
