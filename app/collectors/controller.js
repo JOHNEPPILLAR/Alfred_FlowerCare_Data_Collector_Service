@@ -1,7 +1,7 @@
 /**
  * Import external libraries
  */
-const { fork, exec } = require('child_process');
+const { fork } = require('child_process');
 
 /**
  * Import helper libraries
@@ -13,9 +13,9 @@ const timerInterval = 5 * 60 * 1000; // 5 minutes
 exports.processFlowerCareDevices = async function fnProcessFlowerCareDevices() {
   try {
     serviceHelper.log('trace', 'Starting new client process');
-    const childProcess = fork('./app/collectors/flowercare/flowercare.js');
+    const childProcess = fork('./app/collectors/flowercare/flowercare.js', [], { silent: false });
     childProcess.on('message', (message) => {
-      serviceHelper.log('info', message);
+      serviceHelper.log('trace', message);
     });
 
     childProcess.once('close', () => {

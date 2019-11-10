@@ -92,13 +92,13 @@ async function getFlowerCareData(device) {
       serviceHelper.log('trace', `Connect to device: ${device.address}`);
       const connected = await device.connect();
       if (connected instanceof Error) {
-        serviceHelper.log('trace', `Not able to connect to device: ${device.address}`);
+        serviceHelper.log('error', `Not able to connect to device: ${device.address}`);
         return;
       }
       serviceHelper.log('trace', `Get sensor data from: ${device.address}`);
       const baseData = await device.query();
       if (baseData instanceof Error) {
-        serviceHelper.log('trace', `Not able to query device: ${device.address}`);
+        serviceHelper.log('error', `Not able to query device: ${device.address}`);
         return;
       }
 
@@ -123,7 +123,7 @@ async function getFlowerCareData(device) {
 
 async function getFlowerCareDevices() {
   const devices = await miflora.discover();
-  serviceHelper.log('trace', `Discovered: ${devices.length}`);
+  serviceHelper.log('info', `Discovered: ${devices.length}`);
 
   // eslint-disable-next-line no-restricted-syntax
   for (const device of devices) {
