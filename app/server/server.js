@@ -89,7 +89,7 @@ server.on('uncaughtException', (req, res, route, err) => {
  * Configure API end points
  */
 require('../api/root/root.js').applyRoutes(server);
-require('../api/display/display.js').applyRoutes(server);
+require('../api/sensors/sensors.js').applyRoutes(server);
 
 /**
  * Stop server if process close event is issued
@@ -98,7 +98,6 @@ async function cleanExit() {
   serviceHelper.log('warn', 'Service stopping');
   serviceHelper.log('trace', 'Closing the data store pools');
   try {
-    // await global.devicesDataClient.end();
     global.lightsDataClient
       .end()
       .then(() => serviceHelper.log('trace', 'client has disconnected'))
