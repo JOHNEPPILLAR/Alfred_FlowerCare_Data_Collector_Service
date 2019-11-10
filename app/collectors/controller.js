@@ -15,7 +15,7 @@ exports.processFlowerCareDevices = async function fnProcessFlowerCareDevices() {
     serviceHelper.log('trace', 'Starting new client process');
     const childProcess = fork('./app/collectors/flowercare/flowercare.js');
     childProcess.on('message', (message) => {
-      serviceHelper.log('trace', message);
+      serviceHelper.log('info', message);
     });
 
     childProcess.once('close', () => {

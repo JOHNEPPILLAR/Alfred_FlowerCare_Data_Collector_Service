@@ -8,7 +8,7 @@
   "main": "app/server/server.js",
   "scripts": {
     "prod": "node app/server/server.js",
-    "test": "nodemon app/server/server.js",
+    "test": "snyk test && nodemon app/server/server.js",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect"
   },
@@ -34,9 +34,7 @@
   "devDependencies": {
     "eslint": "^6.6.0",
     "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-plugin-import": "^2.18.2"
-  },
-  "resolutions": {
-    "@abandonware/bluetooth-hci-socket": "git://github.com/abandonware/node-bluetooth-hci-socket#5"
+    "eslint-plugin-import": "^2.18.2",
+    "snyk": "^1.244.0"
   }
 }
