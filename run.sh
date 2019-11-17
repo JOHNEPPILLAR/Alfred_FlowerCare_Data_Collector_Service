@@ -11,7 +11,7 @@ npm update
 npx npm-force-resolutions
 npm install
 npm audit
-snyk test
+#snyk test
 
 echo "Run the server"
 npm run test

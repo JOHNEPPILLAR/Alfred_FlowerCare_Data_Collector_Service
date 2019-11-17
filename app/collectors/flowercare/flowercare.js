@@ -1,54 +1,12 @@
 /**
  * Import external libraries
  */
-require('dotenv').config({ path: '../../.env' });
-
-const { Pool } = require('pg');
+const serviceHelper = require('alfred-helper');
 
 /**
  * Import helper libraries
  */
-const serviceHelper = require('alfred-helper');
 const miflora = require('./miflora.js');
-
-global.APITraceID = '';
-
-// Data base connection pool
-const devicesDataClient = new Pool({
-  host: process.env.DataStore,
-  database: 'devices',
-  user: process.env.DataStoreUser,
-  password: process.env.DataStoreUserPassword,
-  port: 5432,
-});
-
-/**
- * Stop server if process close event is issued
- */
-async function cleanExit() {
-  serviceHelper.log('trace', 'Child Process stopping');
-  serviceHelper.log('trace', 'Closing the data store pools');
-  try {
-    await devicesDataClient.end();
-  } catch (err) {
-    serviceHelper.log('trace', 'Failed to close the data store connection');
-  }
-  serviceHelper.log('trace', 'Exit child process');
-  process.exit(); // Exit process
-}
-process.on('SIGINT', () => {
-  cleanExit();
-});
-process.on('SIGTERM', () => {
-  cleanExit();
-});
-process.on('SIGUSR2', () => {
-  cleanExit();
-});
-process.on('uncaughtException', (err) => {
-  if (err) serviceHelper.log('error', err.message); // log the error
-  cleanExit();
-});
 
 /**
  * Save data to data store
@@ -68,7 +26,7 @@ async function saveDeviceData(DataValues) {
 
   try {
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    const dbClient = await devicesDataClient.connect(); // Connect to data store
+    const dbClient = await global.devicesDataClient.connect(); // Connect to data store
     serviceHelper.log('trace', `Save sensor values for device: ${SQLValues[2]}`);
     const results = await dbClient.query(SQL, SQLValues);
     serviceHelper.log('trace', 'Release the data store connection back to the pool');
@@ -121,7 +79,8 @@ async function getFlowerCareData(device) {
   }
 }
 
-async function getFlowerCareDevices() {
+exports.getFlowerCareDevices = async () => {  
+  serviceHelper.log('info', 'Starting device discovery');
   const devices = await miflora.discover();
   serviceHelper.log('info', `Discovered: ${devices.length}`);
 
@@ -130,8 +89,4 @@ async function getFlowerCareDevices() {
     // eslint-disable-next-line no-await-in-loop
     await getFlowerCareData(device);
   }
-
-  cleanExit();
 }
-
-getFlowerCareDevices();
