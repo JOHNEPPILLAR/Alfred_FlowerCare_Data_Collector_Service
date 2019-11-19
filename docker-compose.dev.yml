@@ -13,7 +13,7 @@ services:
     privileged: true
     ports:
       - '3984:3978'
-    command: npm run test
+    command: npm run local
 
 networks:
   alfred:

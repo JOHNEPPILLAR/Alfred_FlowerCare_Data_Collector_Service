@@ -8,6 +8,7 @@
   "main": "app/server/server.js",
   "scripts": {
     "prod": "node app/server/server.js",
+    "local": "nodemon app/server/server.js",
     "test": "snyk test && nodemon app/server/server.js",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect"
