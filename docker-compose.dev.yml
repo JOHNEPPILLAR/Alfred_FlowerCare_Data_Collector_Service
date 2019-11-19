@@ -9,8 +9,8 @@ services:
     container_name: alfred_flowercare_data_collector_service
     restart: always
     hostname: alfred_flowercare_data_collector_service
-    network_mode: 'host'
-    privileged: true
+    networks:
+      - alfred
     ports:
       - '3984:3978'
     command: npm run local
