@@ -90,6 +90,7 @@ server.on('uncaughtException', (req, res, route, err) => {
  */
 require('../api/root/root.js').applyRoutes(server);
 require('../api/sensors/sensors.js').applyRoutes(server);
+require('../api/schedules/schedules.js').applyRoutes(server);
 
 /**
  * Stop server if process close event is issued
