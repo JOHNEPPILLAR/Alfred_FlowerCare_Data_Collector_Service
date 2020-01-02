@@ -2,11 +2,32 @@
  * Import external libraries
  */
 const serviceHelper = require('alfred-helper');
+const noble = require('@abandonware/noble');
 
 /**
  * Import helper libraries
  */
-const miflora = require('./miflora.js');
+// const miflora = require('./miflora.js');
+const MiFloraDevice = require('./miflora-device.js');
+
+const UUID_SERVICE_XIAOMI = 'fe95';
+const duration = 60000; // 60 seconds
+
+/**
+ * BLE events
+ */
+noble.on('stateChange', (state) => {
+  serviceHelper.log('trace', `BLE adapter changed to ${state}`);
+  if (state !== 'poweredOn') {
+    noble.stopScanning();
+  }
+});
+noble.once('scanStart', () => {
+  serviceHelper.log('trace', 'Discovery started');
+});
+noble.once('scanStop', () => {
+  serviceHelper.log('trace', 'Discovery finished');
+});
 
 /**
  * Save data to data store
@@ -15,7 +36,7 @@ async function saveDeviceData(DataValues) {
   const SQL = 'INSERT INTO garden_sensor("time", sender, address, identifier, battery, sunlight, moisture, fertiliser) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';
   const SQLValues = [
     new Date(),
-    process.env.Environment,
+    process.env.ENVIRONMENT,
     DataValues.address,
     DataValues.type,
     DataValues.battery,
@@ -26,11 +47,16 @@ async function saveDeviceData(DataValues) {
 
   try {
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    const dbClient = await global.devicesDataClient.connect(); // Connect to data store
+    const dbConnection = await serviceHelper.connectToDB('devices');
+    const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', `Save sensor values for device: ${SQLValues[2]}`);
     const results = await dbClient.query(SQL, SQLValues);
-    serviceHelper.log('trace', 'Release the data store connection back to the pool');
+    serviceHelper.log(
+      'trace',
+      'Release the data store connection back to the pool',
+    );
     await dbClient.release(); // Return data store connection back to pool
+    await dbClient.end(); // Close data store connection
 
     if (results.rowCount !== 1) {
       serviceHelper.log('error', `Failed to insert data for device: ${SQLValues[2]}`);
@@ -79,14 +105,65 @@ async function getFlowerCareData(device) {
   }
 }
 
-exports.getFlowerCareDevices = async () => {  
-  serviceHelper.log('info', 'Starting device discovery');
-  const devices = await miflora.discover();
-  serviceHelper.log('info', `Discovered: ${devices.length}`);
+function discoverDevices() {
+  const devices = {};
 
-  // eslint-disable-next-line no-restricted-syntax
-  for (const device of devices) {
-    // eslint-disable-next-line no-await-in-loop
-    await getFlowerCareData(device);
-  }
+  serviceHelper.log(
+    'trace',
+    `Starting discovery with ${duration}ms duration`,
+  );
+
+  return new Promise((resolve, reject) => {
+    noble.startScanning([UUID_SERVICE_XIAOMI], true, (err) => {
+      if (err) {
+        serviceHelper.log('error', err.message);
+        reject(err);
+      }
+    });
+
+    noble.on('discover', (peripheral) => {
+      const exisitingDevice = devices[peripheral.address];
+      if (!exisitingDevice) {
+        const newDevice = new MiFloraDevice(peripheral);
+        if (newDevice) {
+          devices[peripheral.address] = newDevice;
+          serviceHelper.log(
+            'trace',
+            `Discovered ${newDevice.type} @ ${newDevice.address}`,
+          );
+        }
+      }
+    });
+
+    setTimeout(() => {
+      serviceHelper.log('trace', 'Duration reached, stopping discovery');
+      noble.removeAllListeners('discover'); // Remove listner
+      resolve(Object.values(devices));
+    }, duration);
+  });
 }
+
+function ensurePowerOnState() {
+  return new Promise((resolve) => {
+    if (noble.state === 'poweredOn') resolve();
+    serviceHelper.log('trace', 'Waiting for adapter state change');
+    noble.on('stateChange', (state) => {
+      if (state === 'poweredOn') resolve();
+    });
+  });
+}
+
+exports.getFlowerCareDevices = async () => {
+  serviceHelper.log('info', 'Starting device discovery');
+  try {
+    await ensurePowerOnState();
+    const devices = await discoverDevices();
+    await noble.stopScanning(); // Stop scanning
+    serviceHelper.log('info', `Discovered: ${devices.length}`);
+    devices.map(async (device) => {
+      await getFlowerCareData(device);
+    });
+  } catch (err) {
+    serviceHelper.log('error', err.message);
+  }
+};

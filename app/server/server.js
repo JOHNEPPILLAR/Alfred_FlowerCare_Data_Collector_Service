@@ -3,143 +3,141 @@
  */
 require('dotenv').config();
 
+const serviceHelper = require('alfred-helper');
 const restify = require('restify');
-const fs = require('fs');
 const UUID = require('pure-uuid');
-const { Pool } = require('pg');
 
 /**
  * Import helper libraries
  */
-const serviceHelper = require('alfred-helper');
 const devices = require('../collectors/controller.js');
 const schedules = require('../schedules/controller.js');
+const APIroot = require('../api/root/root.js');
+const APIsensors = require('../api/sensors/sensors.js');
+const APIschedules = require('../api/schedules/schedules.js');
+const { version } = require('../../package.json');
 
 global.APITraceID = '';
 global.schedules = [];
+let ClientAccessKey;
 
-// Data base connection pool
-global.devicesDataClient = new Pool({
-  host: process.env.DataStore,
-  database: 'devices',
-  user: process.env.DataStoreUser,
-  password: process.env.DataStoreUserPassword,
-  port: 5432,
-});
+async function setupAndRun() {
+  // Restify server Init
+  serviceHelper.log('trace', 'Getting certs');
+  const key = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, `${process.env.VIRTUAL_HOST}_key`);
+  const certificate = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, `${process.env.VIRTUAL_HOST}_cert`);
 
-// Restify server Init
-const server = restify.createServer({
-  name: process.env.ServiceName,
-  version: process.env.Version,
-  key: fs.readFileSync('./certs/server.key'),
-  certificate: fs.readFileSync('./certs/server.crt'),
-});
-
-/**
- * Setup API middleware
- */
-server.use(restify.plugins.jsonBodyParser({ mapParams: true }));
-server.use(restify.plugins.acceptParser(server.acceptable));
-server.use(restify.plugins.queryParser({ mapParams: true }));
-server.use(restify.plugins.fullResponse());
-server.use((req, res, next) => {
-  serviceHelper.log('trace', req.url);
-  res.setHeader('Content-Security-Policy', `default-src 'self' ${process.env.ServiceDomain}`);
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('Referrer-Policy', 'no-referrer');
-  next();
-});
-server.use((req, res, next) => {
-  // Check for a trace id
-  if (typeof req.headers['api-trace-id'] === 'undefined') {
-    global.APITraceID = new UUID(4);
-  } else {
-    global.APITraceID = req.headers['api-trace-id'];
-  }
-
-  // Check for valid auth key
-  if (req.headers['client-access-key'] !== process.env.ClientAccessKey) {
-    serviceHelper.log(
-      'warn',
-      `Invaid client access key: ${req.headers.ClientAccessKey}`,
-    );
-    serviceHelper.sendResponse(
-      res,
-      401,
-      'There was a problem authenticating you.',
-    );
-    return;
-  }
-  next();
-});
-
-server.on('NotFound', (req, res, err) => {
-  serviceHelper.log('error', `${err.message}`);
-  serviceHelper.sendResponse(res, 404, err.message);
-});
-server.on('uncaughtException', (req, res, route, err) => {
-  serviceHelper.log('error', `${route}: ${err.message}`);
-  serviceHelper.sendResponse(res, 500, err);
-});
-
-/**
- * Configure API end points
- */
-require('../api/root/root.js').applyRoutes(server);
-require('../api/sensors/sensors.js').applyRoutes(server);
-require('../api/schedules/schedules.js').applyRoutes(server);
-
-/**
- * Stop server if process close event is issued
- */
-async function cleanExit() {
-  serviceHelper.log('warn', 'Service stopping');
-  serviceHelper.log('trace', 'Closing the data store pools');
-  try {
-    global.lightsDataClient
-      .end()
-      .then(() => serviceHelper.log('trace', 'client has disconnected'))
-      .catch((err) => serviceHelper.log('error', err.stack));
-  } catch (err) {
-    serviceHelper.log('trace', 'Failed to close the data store connection');
-  }
-  serviceHelper.log('warn', 'Close rest server');
-  server.close(() => {
-    // Ensure rest server is stopped
+  if (key instanceof Error || certificate instanceof Error) {
+    serviceHelper.log('error', 'Not able to get secret (CERTS) from vault');
     serviceHelper.log('warn', 'Exit the app');
-    process.exit(); // Exit app
+    process.exit(1); // Exit app
+  }
+  const server = restify.createServer({
+    name: process.env.VIRTUAL_HOST,
+    version,
+    key,
+    certificate,
+  });
+
+  // Setup API middleware
+  server.on('NotFound', (req, res, err) => {
+    serviceHelper.log('error', `${err.message}`);
+    serviceHelper.sendResponse(res, 404, err.message);
+  });
+  server.use(restify.plugins.jsonBodyParser({ mapParams: true }));
+  server.use(restify.plugins.acceptParser(server.acceptable));
+  server.use(restify.plugins.queryParser({ mapParams: true }));
+  server.use(restify.plugins.fullResponse());
+  server.use((req, res, next) => {
+    serviceHelper.log('trace', req.url);
+    res.setHeader(
+      'Content-Security-Policy',
+      `default-src 'self' ${process.env.VIRTUAL_HOST}`,
+    );
+    res.setHeader(
+      'Strict-Transport-Security',
+      'max-age=31536000; includeSubDomains',
+    );
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    next();
+  });
+  server.use(async (req, res, next) => {
+    // Check for a trace id
+    if (typeof req.headers['api-trace-id'] === 'undefined') {
+      global.APITraceID = new UUID(4);
+    } else {
+      global.APITraceID = req.headers['api-trace-id'];
+    }
+
+    // Check for valid auth key
+    ClientAccessKey = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, 'ClientAccessKey');
+    if (ClientAccessKey instanceof Error) {
+      serviceHelper.log('error', 'Not able to get secret (ClientAccessKey) from vault');
+      serviceHelper.sendResponse(
+        res,
+        500,
+        new Error('There was a problem with the auth service'),
+      );
+      return;
+    }
+    if (req.headers['client-access-key'] !== ClientAccessKey) {
+      serviceHelper.log(
+        'warn',
+        `Invaid client access key: ${req.headers.ClientAccessKey}`,
+      );
+      serviceHelper.sendResponse(
+        res,
+        401,
+        'There was a problem authenticating you',
+      );
+      return;
+    }
+    next();
+  });
+
+  // Configure API end points
+  APIroot.applyRoutes(server);
+  APIsensors.applyRoutes(server);
+  APIschedules.applyRoutes(server);
+
+  // Stop server if process close event is issued
+  function cleanExit() {
+    serviceHelper.log('warn', 'Service stopping');
+    serviceHelper.log('trace', 'Close rest server');
+    server.close(() => {
+      serviceHelper.log('info', 'Exit the app');
+      process.exit(1); // Exit app
+    });
+  }
+  process.on('SIGINT', () => {
+    cleanExit();
+  });
+  process.on('SIGTERM', () => {
+    cleanExit();
+  });
+  process.on('SIGUSR2', () => {
+    cleanExit();
+  });
+  process.on('uncaughtException', (err) => {
+    serviceHelper.log('error', err.message); // log the error
+  });
+  process.on('unhandledRejection', (reason, p) => {
+    serviceHelper.log('error', `Unhandled Rejection at Promise: ${p} - ${reason}`); // log the error
+  });
+
+  // Start service and listen to requests
+  server.listen(process.env.PORT, async () => {
+    serviceHelper.log('info', `${process.env.VIRTUAL_HOST} has started`);
+    if (process.env.MOCK === 'true' || process.env.Mock === 'lights') {
+      serviceHelper.log('info', 'Mocking enabled, will not setup monitors or schedules');
+    } else {
+      devices.processFlowerCareDevices();
+      schedules.setSchedule(true); // Setup garden schedules
+    }
   });
 }
-process.on('SIGINT', () => {
-  cleanExit();
-});
-process.on('SIGTERM', () => {
-  cleanExit();
-});
-process.on('SIGUSR2', () => {
-  cleanExit();
-});
-process.on('uncaughtException', (err) => {
-  if (err) serviceHelper.log('error', err.message); // log the error
-  cleanExit();
-});
 
-if (process.env.Mock === 'true') {
-  serviceHelper.log('info', 'Mock enabled, will not collect plat data from sensors');
-} else {
-  setTimeout(() => {
-    devices.processFlowerCareDevices();
-    schedules.setSchedule(true); // Setup garden schedules
-  }, 1000);
-}
-
-// Start service and listen to requests
-server.listen(process.env.Port, () => {
-  serviceHelper.log(
-    'info',
-    `${process.env.ServiceName} has started and is listening on port ${process.env.Port}`,
-  );
-});
+setupAndRun();

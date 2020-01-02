@@ -11,12 +11,11 @@ async function checkGardenWater() {
   const deviceTokens = [];
   const wateringDuration = 5; // in minute(s)
 
-  let dbClient;
-
   try {
     const toWaterSQL = 'SELECT * FROM vw_water_plants';
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    dbClient = await global.devicesDataClient.connect(); // Connect to data store
+    let dbConnection = await serviceHelper.connectToDB('devices');
+    let dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Getting garden sensors that need watering');
     const needsWatering = await dbClient.query(toWaterSQL);
     serviceHelper.log(
@@ -24,21 +23,20 @@ async function checkGardenWater() {
       'Release the data store connection back to the pool',
     );
     await dbClient.release(); // Return data store connection back to pool
+    await dbClient.end(); // Close data store connection
 
     if (needsWatering.rowCount === 0) {
       serviceHelper.log('info', 'Garden does not need watering');
       return;
     } // Exit function as no data to process
 
-    let body = {
-      lat: process.env.lat,
-      long: process.env.long,
-      forcastDuration: 5,
-    };
+    /*
+    serviceHelper.log('trace', 'Checking if it will rain');
+    const AlfredControllerService = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, 'AlfredControllerService');
+    const HomeLat = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, 'HomeLat');
+    const HomeLong = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, 'HomeLong');
     const willItRain = await serviceHelper.callAlfredServiceGet(
-      `${process.env.AlfredControllerService}/weather/willitrain?lat=${process.env.lat}&long=${process.env.long}`,
-      false,
-      body,
+      `${AlfredControllerService}/weather/willitrain/${HomeLat}/${HomeLong}?forcastDuration=5`,
     );
 
     if (!(willItRain instanceof Error)) {
@@ -53,21 +51,26 @@ async function checkGardenWater() {
         return;
       }
     }
+    */
 
     // Turn on garden hose
     const url = 'https://www.link-tap.com/api/activateInstantMode';
-    body = {
-      username: process.env.LinkTapUser,
-      apiKey: process.env.LinkTapKey,
-      gatewayId: process.env.LinkTapGatewayID,
-      taplinkerId: process.env.LinkTapLinkerID,
+    const LinkTapUser = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, 'LinkTapUser');
+    const LinkTapKey = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, 'LinkTapKey');
+    const LinkTapGatewayID = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, 'LinkTapGatewayID');
+    const LinkTapLinkerID = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, 'LinkTapLinkerID');
+
+    const body = {
+      username: LinkTapUser,
+      apiKey: LinkTapKey,
+      gatewayId: LinkTapGatewayID,
+      taplinkerId: LinkTapLinkerID,
       action: true,
       duration: wateringDuration,
       eco: false,
     };
 
     serviceHelper.log('info', 'Turning on the garden watering system');
-    serviceHelper.log('trace', `${JSON.stringify(body)}`);
     const returnData = await serviceHelper.callAPIServicePut(url, body);
 
     if (returnData instanceof Error) {
@@ -75,9 +78,10 @@ async function checkGardenWater() {
       return;
     }
 
-    const pushSQL = 'SELECT last(device_token, time) as device_token, app_user FROM ios_devices WHERE app_user is not null GROUP BY app_user';
+    const pushSQL = 'SELECT last(device_token, time) as device_token FROM ios_devices';
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    dbClient = await global.devicesDataClient.connect(); // Connect to data store
+    dbConnection = await serviceHelper.connectToDB('devices');
+    dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Getting IOS devices');
     const devicesToNotify = await dbClient.query(pushSQL);
     serviceHelper.log(
@@ -85,6 +89,7 @@ async function checkGardenWater() {
       'Release the data store connection back to the pool',
     );
     await dbClient.release(); // Return data store connection back to pool
+    await dbClient.end(); // Close data store connection
     if (devicesToNotify.rowCount === 0) {
       serviceHelper.log('trace', 'No devices to notify');
       return;
@@ -95,16 +100,23 @@ async function checkGardenWater() {
       'trace',
       'Build list of devices to send push notification to',
     );
-    devicesToNotify.rows.forEach((device) => {
-      deviceTokens.push(device.device_token);
-    });
+    devicesToNotify.rows.map((device) => deviceTokens.push(device.device_token));
 
     // Connect to apples push notification service and send notifications
+    const IOSNotificationKeyID = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, 'IOSNotificationKeyID');
+    const IOSNotificationTeamID = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, 'IOSNotificationTeamID');
+    const IOSPushKey = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, 'IOSPushKey');
+    if (IOSNotificationKeyID instanceof Error
+      || IOSNotificationTeamID instanceof Error
+      || IOSPushKey instanceof Error) {
+      serviceHelper.log('error', 'Not able to get secret (CERTS) from vault');
+      return;
+    }
     const apnProvider = new apn.Provider({
       token: {
-        key: 'certs/Push.p8',
-        keyId: process.env.keyID,
-        teamId: process.env.teamID,
+        key: IOSPushKey,
+        keyId: IOSNotificationKeyID,
+        teamId: IOSNotificationTeamID,
       },
       production: true,
     });
@@ -168,21 +180,20 @@ async function setupSchedule(data) {
  * Set up garden need watering notifications
  */
 exports.setup = async () => {
-  let dbClient;
-  let results;
-
   try {
     // Get data from data store
     const SQL = 'SELECT name, hour, minute, ai_override FROM garden_schedules WHERE type = 0 and active';
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    dbClient = await global.devicesDataClient.connect(); // Connect to data store
+    const dbConnection = await serviceHelper.connectToDB('devices');
+    const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get timer settings');
-    results = await dbClient.query(SQL);
+    const results = await dbClient.query(SQL);
     serviceHelper.log(
       'trace',
       'Release the data store connection back to the pool',
     );
     await dbClient.release(); // Return data store connection back to pool
+    await dbClient.end(); // Close data store connection
 
     if (results.rowCount === 0) {
       // Exit function as no data to process
@@ -191,9 +202,10 @@ exports.setup = async () => {
     }
 
     // Setup timers
-    results.rows.forEach((info) => {
-      setupSchedule(info);
+    results.rows.map(async (info) => {
+      await setupSchedule(info);
     });
+    setupSchedule(results.rows[0]);
   } catch (err) {
     serviceHelper.log('error', err.message);
   }

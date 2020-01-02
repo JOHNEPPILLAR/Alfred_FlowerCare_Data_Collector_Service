@@ -46,7 +46,8 @@ async function listSchedules(req, res, next) {
   try {
     const SQL = 'SELECT * FROM garden_schedules ORDER BY id';
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    const dbClient = await global.devicesDataClient.connect(); // Connect to data store
+    const dbConnection = await serviceHelper.connectToDB('devices');
+    const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get sensors');
     const results = await dbClient.query(SQL);
     serviceHelper.log(
@@ -54,6 +55,7 @@ async function listSchedules(req, res, next) {
       'Release the data store connection back to the pool',
     );
     await dbClient.release(); // Return data store connection back to pool
+    await dbClient.end(); // Close data store connection
 
     // Send data back to caler
     serviceHelper.sendResponse(res, true, results.rows);
@@ -103,7 +105,8 @@ async function listSchedule(req, res, next) {
   try {
     const SQL = `SELECT * FROM garden_schedules WHERE id = ${scheduleID}`;
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    const dbClient = await global.devicesDataClient.connect(); // Connect to data store
+    const dbConnection = await serviceHelper.connectToDB('devices');
+    const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get sensors');
     const results = await dbClient.query(SQL);
     serviceHelper.log(
@@ -111,6 +114,7 @@ async function listSchedule(req, res, next) {
       'Release the data store connection back to the pool',
     );
     await dbClient.release(); // Return data store connection back to pool
+    await dbClient.end(); // Close data store connection
 
     // Send data back to caler
     serviceHelper.sendResponse(res, true, results.rows);
@@ -144,12 +148,8 @@ skill.get('/schedules/:scheduleID', listSchedule);
  */
 async function saveSchedule(req, res, next) {
   serviceHelper.log('trace', 'Save Schedule API called');
-
   serviceHelper.log('trace', `Params: ${JSON.stringify(req.params)}`);
   serviceHelper.log('trace', `Body: ${JSON.stringify(req.body)}`);
-
-  let dbClient;
-  let results;
 
   const { scheduleID } = req.params;
   const {
@@ -178,14 +178,16 @@ async function saveSchedule(req, res, next) {
     ];
 
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    dbClient = await global.devicesDataClient.connect(); // Connect to data store
+    const dbConnection = await serviceHelper.connectToDB('devices');
+    const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Save sensor schedule');
-    results = await dbClient.query(SQL, SQLValues);
+    const results = await dbClient.query(SQL, SQLValues);
     serviceHelper.log(
       'trace',
       'Release the data store connection back to the pool',
     );
     await dbClient.release(); // Return data store connection back to pool
+    await dbClient.end(); // Close data store connection
 
     // Send data back to caler
     if (results.rowCount === 1) {

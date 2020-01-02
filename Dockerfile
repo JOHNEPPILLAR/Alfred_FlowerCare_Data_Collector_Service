@@ -1,29 +1,33 @@
-FROM node:12
+FROM node:13
 
 RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/London > /etc/timezone \
+	&& mkdir -p /home/nodejs/app \
 	&& apt-get update -y \
 	&& apt-get install -yqq \
 	&& apt-get install -y build-essential usbutils git bluetooth bluez libbluetooth-dev libudev-dev libcap2-bin \
-	&& mkdir -p /home/nodejs/app \
-    && rm -rf /var/lib/apt/lists/*	
+	git \ 
+	g++ \
+	gcc \
+	libgcc \
+	libstdc++ \
+	linux-headers \
+	make \
+	python \
+	&& npm install --quiet node-gyp -g \
+	&& rm -rf /var/cache/apk/*
 
 WORKDIR /home/nodejs/app
 
-COPY . /home/nodejs/app
-
-RUN mv certs/alfred_flowercare_data_collector_service.key certs/server.key \
-	&& mv certs/alfred_flowercare_data_collector_service.crt certs/server.crt 
-
-RUN npm update \
-	&& npm install --production
-
-RUN apt-get autoremove -yqq \
-	&& apt-get clean
+COPY package*.json ./
 
 RUN setcap cap_net_raw+eip $(eval readlink -f `which node`)
 
-RUN service bluetooth stop
+RUN npm install
+
+COPY --chown=node:node . .
+
+USER node
 
 HEALTHCHECK --start-period=60s --interval=10s --timeout=10s --retries=6 CMD ["./healthcheck.sh"]
 
-EXPOSE 3984
+EXPOSE 3978
