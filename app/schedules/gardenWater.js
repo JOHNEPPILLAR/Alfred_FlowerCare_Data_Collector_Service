@@ -205,7 +205,6 @@ exports.setup = async () => {
     results.rows.map(async (info) => {
       await setupSchedule(info);
     });
-    setupSchedule(results.rows[0]);
   } catch (err) {
     serviceHelper.log('error', err.message);
   }
