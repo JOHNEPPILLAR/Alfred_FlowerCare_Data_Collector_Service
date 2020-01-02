@@ -13,7 +13,7 @@ const MODE_BUFFER_REALTIME = {
   Enable: Buffer.from('a01f', 'hex'),
   Disable: Buffer.from('c01f', 'hex'),
 };
-const timeout = 60000; // 1 minute
+const timeout = 120000; // 2 minutes
 
 /**
  * Represents a Mi Flora device
