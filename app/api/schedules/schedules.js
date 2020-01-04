@@ -46,7 +46,7 @@ async function listSchedules(req, res, next) {
   try {
     const SQL = 'SELECT * FROM garden_schedules ORDER BY id';
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    const dbConnection = await serviceHelper.connectToDB('devices');
+    const dbConnection = await serviceHelper.connectToDB('flowercare');
     const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get sensors');
     const results = await dbClient.query(SQL);
@@ -105,7 +105,7 @@ async function listSchedule(req, res, next) {
   try {
     const SQL = `SELECT * FROM garden_schedules WHERE id = ${scheduleID}`;
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    const dbConnection = await serviceHelper.connectToDB('devices');
+    const dbConnection = await serviceHelper.connectToDB('flowercare');
     const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get sensors');
     const results = await dbClient.query(SQL);
@@ -178,7 +178,7 @@ async function saveSchedule(req, res, next) {
     ];
 
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    const dbConnection = await serviceHelper.connectToDB('devices');
+    const dbConnection = await serviceHelper.connectToDB('flowercare');
     const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Save sensor schedule');
     const results = await dbClient.query(SQL, SQLValues);

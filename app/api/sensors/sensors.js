@@ -80,7 +80,7 @@ async function sensors(req, res, next) {
     }
 
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    const dbConnection = await serviceHelper.connectToDB('devices');
+    const dbConnection = await serviceHelper.connectToDB('flowercare');
     const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get sensor values');
     const results = await dbClient.query(SQL);
@@ -139,7 +139,7 @@ async function current(req, res, next) {
   try {
     const SQL = 'SELECT address, sensor_label, plant_name, moisture, threshold_moisture, fertiliser, threshold_fertilizer, battery FROM vw_plant_data WHERE time > NOW() - interval \'1 hour\' GROUP BY address, sensor_label, plant_name, moisture, threshold_moisture, fertiliser, threshold_fertilizer, battery ORDER BY sensor_label';
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    const dbConnection = await serviceHelper.connectToDB('devices');
+    const dbConnection = await serviceHelper.connectToDB('flowercare');
     const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get sensor values');
     const results = await dbClient.query(SQL);

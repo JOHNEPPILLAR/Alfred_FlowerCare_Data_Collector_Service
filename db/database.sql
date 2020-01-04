@@ -1,1 +1,1 @@
-CREATE DATABASE devices
+CREATE DATABASE flowercare

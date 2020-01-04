@@ -14,7 +14,7 @@ async function checkGardenWater() {
   try {
     const toWaterSQL = 'SELECT * FROM vw_water_plants';
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    let dbConnection = await serviceHelper.connectToDB('devices');
+    let dbConnection = await serviceHelper.connectToDB('flowercare');
     let dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Getting garden sensors that need watering');
     const needsWatering = await dbClient.query(toWaterSQL);
@@ -184,7 +184,7 @@ exports.setup = async () => {
     // Get data from data store
     const SQL = 'SELECT name, hour, minute, ai_override FROM garden_schedules WHERE type = 0 and active';
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    const dbConnection = await serviceHelper.connectToDB('devices');
+    const dbConnection = await serviceHelper.connectToDB('flowercare');
     const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get timer settings');
     const results = await dbClient.query(SQL);
