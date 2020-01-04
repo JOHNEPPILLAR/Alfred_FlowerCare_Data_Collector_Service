@@ -1,7 +1,7 @@
 /**
  * Import external libraries
  */
-const schedule = require('node-schedule');
+const scheduler = require('node-schedule');
 const serviceHelper = require('alfred-helper');
 
 /**
@@ -12,25 +12,37 @@ const gardenWater = require('./gardenWater.js');
 /**
  * Setup light and light group names
  */
-function setupSchedules() {
+async function setupSchedules() {
   // Cancel any existing timers
   serviceHelper.log(
     'trace',
     'Removing any existing timers',
   );
-  global.schedules.forEach((value) => value.cancel());
-  gardenWater.setup(); // Water garden
+  await global.schedules.map((value) => value.cancel());
+  await gardenWater.setup(); // Water garden
 }
 
 /**
  * Set up the timers
  */
-exports.setSchedule = (runNow) => {
-  if (runNow) setupSchedules();
+exports.setSchedule = async () => {
+  await setupSchedules();
 
-  // Set timers each day to keep in sync with sunset changes
-  const rule = new schedule.RecurrenceRule();
-  rule.hour = 12;
+  // Set schedules each day to keep in sync with sunrise & sunset changes
+  const rule = new scheduler.RecurrenceRule();
+  rule.hour = 3;
   rule.minute = 5;
-  schedule.scheduleJob(rule, () => setupSchedules()); // Set the timer
+  const schedule = scheduler.scheduleJob(rule, () => {
+    serviceHelper.log('info', 'Resetting daily schedules to keep in sync with sunrise & sunset changes');
+    setupSchedules();
+  }); // Set the schedule
+  global.schedules.push(schedule);
+
+  serviceHelper.log(
+    'info',
+    `Reset schedules will run at: ${serviceHelper.zeroFill(
+      rule.hour,
+      2,
+    )}:${serviceHelper.zeroFill(rule.minute, 2)}`,
+  );
 };
