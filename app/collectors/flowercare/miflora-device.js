@@ -13,7 +13,7 @@ const MODE_BUFFER_REALTIME = {
   Enable: Buffer.from('a01f', 'hex'),
   Disable: Buffer.from('c01f', 'hex'),
 };
-const timeout = 120000; // 2 minutes
+const timeout = 60000; // 1 minutes
 
 /**
  * Represents a Mi Flora device
@@ -66,7 +66,7 @@ class MiFloraDevice {
     // eslint-disable-next-line consistent-return
     return new Promise((resolve, reject) => {
       const deviceTimeout = setTimeout(() => {
-        reject(new Error('device connection timeout'));
+        reject(new Error(`Connection timeout for device: ${this.address}`));
       }, timeout);
 
       if (this.peripheral.state === 'connected') {
@@ -99,7 +99,7 @@ class MiFloraDevice {
     // eslint-disable-next-line consistent-return
     return new Promise((resolve, reject) => {
       const deviceTimeout = setTimeout(() => {
-        reject(new Error('device disconnect timeout'));
+        reject(new Error(`Disconnection timeout for device: ${this.address}`));
       }, timeout);
       if (this.peripheral.state === 'disconnected') {
         clearTimeout(deviceTimeout);
@@ -126,7 +126,7 @@ class MiFloraDevice {
   setRealtimeDataMode(enable) {
     return new Promise((resolve, reject) => {
       const deviceTimeout = setTimeout(() => {
-        reject(new Error('setRealtimeDataMode timeout'));
+        reject(new Error(`setRealtimeDataMode timeout for device: ${this.address}`));
       }, timeout);
       serviceHelper.log('trace', `${enable ? 'enabling' : 'disabling'} realtime data mode`);
       try {
@@ -148,7 +148,7 @@ class MiFloraDevice {
   setDeviceMode(buffer) {
     return new Promise(async (resolve, reject) => {
       const deviceTimeout = setTimeout(() => {
-        reject(new Error('setDeviceMode timeout'));
+        reject(new Error(`setDeviceMode timeout for device: ${this.address}`));
       }, timeout);
       serviceHelper.log('trace', 'Changing device mode');
       try {
@@ -173,7 +173,7 @@ class MiFloraDevice {
     // eslint-disable-next-line consistent-return
     return new Promise(async (resolve, reject) => {
       const deviceTimeout = setTimeout(() => {
-        reject(new Error('queryFirmwareInfo timeout'));
+        reject(new Error(`queryFirmwareInfo timeout for device: ${this.address}`));
       }, timeout);
       serviceHelper.log('trace', 'Querying firmware information');
       try {
@@ -200,7 +200,7 @@ class MiFloraDevice {
   querySensorValues(plain = false) {
     return new Promise(async (resolve, reject) => {
       const deviceTimeout = setTimeout(() => {
-        reject(new Error('querySensorValues timeout'));
+        reject(new Error(`Query sensor values timeout for device: ${this.address}`));
       }, timeout);
       serviceHelper.log('trace', 'Querying sensor information');
       try {
@@ -231,7 +231,7 @@ class MiFloraDevice {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       const deviceTimeout = setTimeout(() => {
-        reject(new Error('query all values timeout'));
+        reject(new Error(`Query all values timeout for device: ${this.address}`));
       }, timeout);
       serviceHelper.log('trace', 'Querying all values');
       try {
@@ -253,7 +253,7 @@ class MiFloraDevice {
     // eslint-disable-next-line consistent-return
     return new Promise((resolve, reject) => {
       const deviceTimeout = setTimeout(() => {
-        reject(new Error('resolveCharacteristics timeout'));
+        reject(new Error(`resolveCharacteristics timeout for device: ${this.address}`));
       }, timeout);
       serviceHelper.log('trace', 'Resolving characteristic');
       try {
@@ -294,7 +294,7 @@ class MiFloraDevice {
     // eslint-disable-next-line consistent-return
     this.returnValue = new Promise((resolve, reject) => {
       const deviceTimeout = setTimeout(() => {
-        reject(new Error('readCharacteristic timeout'));
+        reject(new Error(`readCharacteristic timeout for device: ${this.address}`));
       }, timeout);
       try {
         characteristic.read((err, data) => {
@@ -327,7 +327,7 @@ class MiFloraDevice {
     // eslint-disable-next-line consistent-return
     this.returnValue = new Promise((resolve, reject) => {
       const deviceTimeout = setTimeout(() => {
-        reject(new Error('writeCharacteristic timeout'));
+        reject(new Error(`writeCharacteristic timeout for device: ${this.address}`));
       }, timeout);
       try {
         characteristic.write(data, false, (err) => {
