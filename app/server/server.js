@@ -131,7 +131,7 @@ async function setupAndRun() {
   // Start service and listen to requests
   server.listen(process.env.PORT, async () => {
     serviceHelper.log('info', `${process.env.VIRTUAL_HOST} has started`);
-    if (process.env.MOCK === 'true' || process.env.Mock === 'lights') {
+    if (process.env.MOCK === 'true') {
       serviceHelper.log('info', 'Mocking enabled, will not setup monitors or schedules');
     } else {
       devices.processFlowerCareDevices();
