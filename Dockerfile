@@ -28,4 +28,4 @@ USER node
 
 HEALTHCHECK --start-period=60s --interval=10s --timeout=10s --retries=6 CMD ["./healthcheck.sh"]
 
-EXPOSE 3978
+EXPOSE 3981
