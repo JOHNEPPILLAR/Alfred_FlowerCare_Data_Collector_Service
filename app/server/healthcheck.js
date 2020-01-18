@@ -7,6 +7,7 @@ const logger = require('pino')();
 
 const options = {
   method: 'GET',
+  uri: `https://localhost:${process.env.PORT}/ping`,
   timeout: 5000,
   json: true,
   agentOptions: { rejectUnauthorized: false },
