@@ -183,14 +183,13 @@ exports.setup = async () => {
     const SQL = 'SELECT name, hour, minute, ai_override FROM garden_schedules WHERE type = 0 and active';
     serviceHelper.log('trace', 'Connect to data store connection pool');
     const dbConnection = await serviceHelper.connectToDB('flowercare');
-    const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get timer settings');
-    const results = await dbClient.query(SQL);
+    const results = await dbConnection.query(SQL);
     serviceHelper.log(
       'trace',
       'Release the data store connection back to the pool',
     );
-    await dbClient.end(); // Close data store connection
+    await dbConnection.end(); // Close data store connection
 
     if (results.rowCount === 0) {
       // Exit function as no data to process

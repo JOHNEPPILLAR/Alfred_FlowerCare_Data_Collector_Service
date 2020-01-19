@@ -48,14 +48,13 @@ async function saveDeviceData(DataValues) {
   try {
     serviceHelper.log('trace', 'Connect to data store connection pool');
     const dbConnection = await serviceHelper.connectToDB('flowercare');
-    const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', `Save sensor values for device: ${SQLValues[2]}`);
-    const results = await dbClient.query(SQL, SQLValues);
+    const results = await dbConnection.query(SQL, SQLValues);
     serviceHelper.log(
       'trace',
       'Release the data store connection back to the pool',
     );
-    await dbClient.end(); // Close data store connection
+    await dbConnection.end(); // Close data store connection
 
     if (results.rowCount !== 1) {
       serviceHelper.log('error', `Failed to insert data for device: ${SQLValues[2]}`);
