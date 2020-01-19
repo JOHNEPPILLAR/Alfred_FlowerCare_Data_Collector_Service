@@ -22,7 +22,6 @@ async function checkGardenWater() {
       'trace',
       'Release the data store connection back to the pool',
     );
-    await dbClient.release(); // Return data store connection back to pool
     await dbClient.end(); // Close data store connection
 
     if (needsWatering.rowCount === 0) {
@@ -88,7 +87,6 @@ async function checkGardenWater() {
       'trace',
       'Release the data store connection back to the pool',
     );
-    await dbClient.release(); // Return data store connection back to pool
     await dbClient.end(); // Close data store connection
     if (devicesToNotify.rowCount === 0) {
       serviceHelper.log('trace', 'No devices to notify');
@@ -192,7 +190,6 @@ exports.setup = async () => {
       'trace',
       'Release the data store connection back to the pool',
     );
-    await dbClient.release(); // Return data store connection back to pool
     await dbClient.end(); // Close data store connection
 
     if (results.rowCount === 0) {

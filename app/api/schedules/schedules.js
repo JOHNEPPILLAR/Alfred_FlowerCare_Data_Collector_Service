@@ -54,7 +54,6 @@ async function listSchedules(req, res, next) {
       'trace',
       'Release the data store connection back to the pool',
     );
-    await dbClient.release(); // Return data store connection back to pool
     await dbClient.end(); // Close data store connection
 
     // Send data back to caler
@@ -113,7 +112,6 @@ async function listSchedule(req, res, next) {
       'trace',
       'Release the data store connection back to the pool',
     );
-    await dbClient.release(); // Return data store connection back to pool
     await dbClient.end(); // Close data store connection
 
     // Send data back to caler
@@ -186,7 +184,6 @@ async function saveSchedule(req, res, next) {
       'trace',
       'Release the data store connection back to the pool',
     );
-    await dbClient.release(); // Return data store connection back to pool
     await dbClient.end(); // Close data store connection
 
     // Send data back to caler
