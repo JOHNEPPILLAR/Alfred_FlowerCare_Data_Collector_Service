@@ -4,6 +4,7 @@
 const scheduler = require('node-schedule');
 const apn = require('apn');
 const serviceHelper = require('alfred-helper');
+const dateformat = require('dateformat');
 
 async function checkGardenWater() {
   serviceHelper.log('trace', 'Checking water levels');
@@ -155,22 +156,15 @@ async function setupSchedule(data) {
     return false;
   }
 
-  let rule = new scheduler.RecurrenceRule();
-  rule.hour = data.hour;
-  rule.minute = data.minute;
-
-  const schedule = scheduler.scheduleJob(rule, () => {
-    checkGardenWater();
-  });
+  const date = new Date();
+  date.setHours(data.hour);
+  date.setMinutes(data.minute);
+  const schedule = scheduler.scheduleJob(date, () => checkGardenWater()); // Set the schedule
   global.schedules.push(schedule);
   serviceHelper.log(
     'info',
-    `${data.name} schedule will run at: ${serviceHelper.zeroFill(
-      rule.hour,
-      2,
-    )}:${serviceHelper.zeroFill(rule.minute, 2)}`,
+    `Water garden schedule will run on ${dateformat(date, 'dd-mm-yyyy @ HH:MM')}`,
   );
-  rule = null; // Clear schedule values
   return true;
 }
 
