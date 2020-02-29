@@ -21,7 +21,7 @@
     "fs": "^0.0.2",
     "path": "^0.12.7",
     "pg": "^7.18.2",
-    "pino": "^5.16.0",
+    "pino": "^5.17.0",
     "pino-pretty": "^3.6.0",
     "pure-uuid": "^1.6.0",
     "request": "^2.88.2",
@@ -35,6 +35,6 @@
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.1",
-    "snyk": "^1.295.0"
+    "snyk": "^1.297.2"
   }
 }
