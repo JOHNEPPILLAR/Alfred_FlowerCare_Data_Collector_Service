@@ -19,6 +19,7 @@ const APIschedules = require('../api/schedules/schedules.js');
 
 global.APITraceID = '';
 global.schedules = [];
+
 let ClientAccessKey;
 
 async function setupAndRun() {
