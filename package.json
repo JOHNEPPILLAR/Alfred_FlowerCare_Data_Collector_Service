@@ -5,22 +5,18 @@
   "author": "JP",
   "license": "MIT",
   "snyk": true,
-  "main": "app/server/server.js",
+  "main": "lib/server/server.js",
   "scripts": {
-    "start": "node app/server/server.js",
-    "local": "nodemon app/server/server.js",
+    "start": "node lib/server/server.js",
+    "local": "nodemon lib/server/server.js",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "alfred-helper": "git://github.com/johneppillar/alfred_helper_lib",
-    "@abandonware/noble": "^1.9.2-7",
-    "child_process": "^1.0.2",
+    "miflora": "^1.0.5",
     "dateformat": "^3.0.3",
     "dotenv": "^8.2.0",
-    "fs": "^0.0.2",
-    "path": "^0.12.7",
-    "pg": "^7.18.2",
     "pure-uuid": "^1.6.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
@@ -32,7 +28,7 @@
   "devDependencies": {
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-plugin-import": "^2.20.1",
-    "snyk": "^1.305.0"
+    "eslint-plugin-import": "^2.20.2",
+    "snyk": "^1.311.0"
   }
 }

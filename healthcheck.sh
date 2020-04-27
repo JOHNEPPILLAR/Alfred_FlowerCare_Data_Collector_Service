@@ -7,6 +7,6 @@ echo "Set env vars"
 export ENVIRONMENT="production"
 export PORT=3981
 
-node app/server/healthcheck.js
+node lib/server/healthcheck.js
 
 exit $?
