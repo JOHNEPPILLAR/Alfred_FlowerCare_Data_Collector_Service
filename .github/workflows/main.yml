@@ -14,8 +14,20 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
+      - name: Slack Notification on failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@master
+        env:
+          SLACK_CHANNEL: github_builds
+          SLACK_USERNAME: 'Github CI'
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_ICON: https://avatars2.githubusercontent.com/u/25100863?s=40&v=4
+          SLACK_TITLE: 🛡️ Scan found vulnerabilities
+          SLACK_MESSAGE: 'Build step failed  :bangbang:'
+          SLACK_COLOR: '#ff0000'
+  
   node:
-    name: 📝 Setup node & check package install
+    name: 📝 Setup node & check packages install ok
     runs-on: ubuntu-latest
     steps:    
       - name: Read .nvmrc
@@ -35,7 +47,7 @@ jobs:
   build:
     name: 🛠 Build and push docker container
     runs-on: ubuntu-latest
-    needs: [security, node]
+    needs: [node]
     steps:
       - uses: actions/checkout@master
       - name: Add private registery to docker deamon
@@ -48,8 +60,8 @@ jobs:
     
       - name: Build & push docker container to registry
         run: |
-          docker build . -t ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service:latest
-          docker push ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service:latest
+          docker build . -t ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_tp_link_service:latest
+          docker push ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_tp_link_service:latest
 
       - name: Slack Notification on sucess
         if: success()
