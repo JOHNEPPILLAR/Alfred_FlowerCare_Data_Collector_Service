@@ -60,8 +60,8 @@ jobs:
     
       - name: Build & push docker container to registry
         run: |
-          docker build . -t ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_tp_link_service:latest
-          docker push ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_tp_link_service:latest
+          docker build . -t ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service:latest
+          docker push ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service:latest
 
       - name: Slack Notification on sucess
         if: success()
