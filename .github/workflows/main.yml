@@ -22,8 +22,8 @@ jobs:
           SLACK_USERNAME: 'Github CI'
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_ICON: https://avatars2.githubusercontent.com/u/25100863?s=40&v=4
-          SLACK_TITLE: 🛡️ Scan found vulnerabilities
-          SLACK_MESSAGE: 'Build step failed  :bangbang:'
+          SLACK_TITLE: Build status
+          SLACK_MESSAGE: '🛡️ Scan found vulnerabilities'
           SLACK_COLOR: '#ff0000'
   
   node:
