@@ -9,7 +9,7 @@ CREATE TABLE garden_sensor (
   fertiliser                DOUBLE PRECISION  NULL
 )
 
-SELECT create_hypertable('garden_sensor', 'time', 'address');
+SELECT create_hypertable('garden_sensor', 'time');
 
 CREATE TABLE garden_sensor_plant (
   id                        SERIAL            PRIMARY KEY,
