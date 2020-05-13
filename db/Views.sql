@@ -11,7 +11,8 @@ SELECT last(garden_sensor."time", garden_sensor."time") AS "time",
 	last(garden_sensor.moisture, garden_sensor."time") AS moisture,
 	max(garden_sensor_plant.threshold_moisture) AS threshold_moisture,
 	last(garden_sensor.fertiliser, garden_sensor."time") AS fertiliser,
-	max(garden_sensor_plant.threshold_fertilizer) AS threshold_fertilizer
+	max(garden_sensor_plant.threshold_fertilizer) AS threshold_fertilizer,
+	last(garden_sensor_plant.garden, garden_sensor."time") AS garden
 FROM garden_sensor
 INNER JOIN garden_sensor_plant ON garden_sensor.address = garden_sensor_plant.address 
 GROUP BY garden_sensor.address
@@ -28,7 +29,7 @@ SELECT time,
 	moisture,
 	threshold_moisture
 FROM vw_plant_data
-WHERE moisture <= threshold_moisture AND time > NOW() - interval '1 hour'
+WHERE moisture <= threshold_moisture AND time > NOW() - interval '1 hour' AND garden
 
 --DROP VIEW vw_fertiliser_plants;
 CREATE OR REPLACE VIEW vw_fertiliser_plants AS

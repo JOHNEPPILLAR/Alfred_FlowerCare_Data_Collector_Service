@@ -16,6 +16,7 @@ CREATE TABLE garden_sensor_plant (
   address                   TEXT              NOT NULL,
   sensor_label              TEXT              NOT NULL,
   plant_name                TEXT              NOT NULL,
+  garden                    BOOLEAN           NOT NULL DEFAULT TRUE,
   threshold_moisture        DOUBLE PRECISION  NOT NULL,
   threshold_fertilizer      DOUBLE PRECISION  NOT NULL
 )
