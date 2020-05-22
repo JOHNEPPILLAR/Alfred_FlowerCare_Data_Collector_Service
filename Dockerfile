@@ -10,13 +10,16 @@ RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/Lond
 	libcap2-bin \
 	git \ 
 	python \
-	python3-dev \
 	virtualenv \
+	build-essential \
+	python3-dev \
 	libdbus-glib-1-dev \
 	libgirepository1.0-dev \
-	build-essential \
+	libcairo2-dev \
 	&& npm install --quiet node-gyp -g \
 	&& rm -rf /var/cache/apk/*
+
+RUN pip3 install dbus-python
 
 WORKDIR /home/nodejs/app
 
