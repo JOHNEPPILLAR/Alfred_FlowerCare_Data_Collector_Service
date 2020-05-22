@@ -3,20 +3,8 @@ FROM node:14
 RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/London > /etc/timezone \
 	&& mkdir -p /home/nodejs/app \
 	&& apt-get update -y \
-    && apt-get install -y bluetooth \
-	bluez \
-	libbluetooth-dev \
-	libudev-dev \
-	libcap2-bin \
-	git \ 
-	python \
-	virtualenv \
-	build-essential \
-	python3-dev \
-	libdbus-glib-1-dev \
-	libgirepository1.0-dev \
-	libcairo2-dev \
-	&& npm install --quiet node-gyp -g \
+	&& apt-get install -yqq \
+    && apt-get install -y build-essential usbutils git bluetooth bluez libbluetooth-dev libudev-dev \
 	&& rm -rf /var/cache/apk/*
 
 RUN pip3 install dbus-python
