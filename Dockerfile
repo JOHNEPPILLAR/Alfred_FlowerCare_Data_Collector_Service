@@ -3,9 +3,17 @@ FROM node:14
 RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/London > /etc/timezone \
 	&& mkdir -p /home/nodejs/app \
 	&& apt-get update -y \
-    && apt-get install -y bluetooth bluez libbluetooth-dev libudev-dev libcap2-bin \
+    && apt-get install -y bluetooth \
+	bluez \
+	libbluetooth-dev \
+	libudev-dev \
+	libcap2-bin \
 	git \ 
 	python \
+	python3-dev \
+	virtualenv \
+	libdbus-glib-1-dev \
+	libgirepository1.0-dev \
 	build-essential \
 	&& npm install --quiet node-gyp -g \
 	&& rm -rf /var/cache/apk/*
