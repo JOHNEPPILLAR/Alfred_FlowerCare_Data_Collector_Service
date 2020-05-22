@@ -4,6 +4,10 @@ RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/Lond
 	&& mkdir -p /home/nodejs/app \
 	&& apt-get update -y \
     && apt-get install -y bluetooth bluez libbluetooth-dev libudev-dev libcap2-bin \
+	git \ 
+	python \
+	build-essential \
+	&& npm install --quiet node-gyp -g \
 	&& rm -rf /var/cache/apk/*
 
 WORKDIR /home/nodejs/app
