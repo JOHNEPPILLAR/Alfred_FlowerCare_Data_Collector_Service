@@ -7,8 +7,6 @@ RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/Lond
     && apt-get install -y build-essential usbutils git bluetooth bluez libbluetooth-dev libudev-dev \
 	&& rm -rf /var/cache/apk/*
 
-RUN pip3 install dbus-python
-
 WORKDIR /home/nodejs/app
 
 COPY package*.json ./
