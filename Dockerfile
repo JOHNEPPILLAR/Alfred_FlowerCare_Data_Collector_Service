@@ -4,7 +4,7 @@ RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/Lond
 	&& mkdir -p /home/nodejs/app \
 	&& apt-get update -y \
 	&& apt-get install -yqq \
-    && apt-get install -y build-essential usbutils git bluetooth bluez libbluetooth-dev libudev-dev \
+    && apt-get install -y build-essential usbutils git bluetooth bluez libbluetooth-dev libudev-dev libcap2-bin \
 	&& rm -rf /var/cache/apk/*
 
 WORKDIR /home/nodejs/app
