@@ -1,7 +1,7 @@
 FROM node:14-alpine
 
 RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/London > /etc/timezone \
-	&& apk update -y \
+	&& apk update \
     && mkdir -p /home/nodejs/app
     
 RUN apk --no-cache --virtual build-dependencies add \
