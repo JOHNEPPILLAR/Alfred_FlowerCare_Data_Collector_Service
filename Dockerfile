@@ -1,16 +1,25 @@
-FROM node:14
+FROM node:14-alpine
 
 RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/London > /etc/timezone \
-	&& mkdir -p /home/nodejs/app \
-	&& apt-get update -y \
-    && apt-get install -y node-gyp make gcc git bluetooth bluez libbluetooth-dev libudev-dev libcap2-bin \
-	&& rm -rf /var/cache/apk/*
+	&& apk update -y \
+    && mkdir -p /home/nodejs/app
+    
+RUN apk --no-cache --virtual build-dependencies add \
+	bluez \
+    git \
+    g++ \
+    gcc \
+    libgcc \
+    libstdc++ \
+    linux-headers \
+    make \
+    python \
+    && npm install --quiet node-gyp -g \
+	&& rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home/nodejs/app
 
 COPY package*.json ./
-
-RUN setcap cap_net_raw+eip $(eval readlink -f `which node`)
 
 RUN npm install
 
