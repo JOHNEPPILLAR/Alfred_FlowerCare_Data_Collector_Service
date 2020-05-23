@@ -16,4 +16,6 @@ COPY --chown=node:node . .
 
 USER node
 
+ENTRYPOINT ["/bin/bash"]
+
 EXPOSE 3981
