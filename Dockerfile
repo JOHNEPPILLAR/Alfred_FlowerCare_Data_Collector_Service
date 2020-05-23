@@ -1,25 +1,24 @@
-FROM node:14-alpine
+FROM node:14
 
 RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/London > /etc/timezone \
-	&& apk update \
-    && mkdir -p /home/nodejs/app
-    
-RUN apk --no-cache --virtual build-dependencies add \
-	bluez \
-    git \
-    g++ \
-    gcc \
-    libgcc \
-    libstdc++ \
-    linux-headers \
-    make \
-    python \
-    && npm install --quiet node-gyp -g \
-	&& rm -rf /var/lib/apt/lists/*
+	&& mkdir -p /home/nodejs/app \
+	&& apt-get update -y \
+	&& apt-get install -yqq \
+	&& apt-get install -y build-essential usbutils git bluetooth bluez libbluetooth-dev libudev-dev libcap2-bin \
+	git \ 
+	g++ \
+	gcc \
+	libstdc++ \
+	make \
+	python \
+	&& npm install --quiet node-gyp -g \
+	&& rm -rf /var/cache/apk/*
 
 WORKDIR /home/nodejs/app
 
 COPY package*.json ./
+
+RUN setcap cap_net_raw+eip $(eval readlink -f `which node`)
 
 RUN npm install
 
