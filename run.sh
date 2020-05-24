@@ -17,6 +17,8 @@ echo "Set env vars"
 export ENVIRONMENT="development"
 export MOCK="false"
 export ALFRED_WEATHER_SERVICE="https://alfred_weather_service:3979"
+export NO_SCHEDULE="true"
+export ZONE="3"
 
 echo "Run the server"
 npm run local
