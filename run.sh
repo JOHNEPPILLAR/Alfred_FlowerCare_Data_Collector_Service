@@ -20,7 +20,7 @@ export ALFRED_WEATHER_SERVICE="https://alfred_weather_service:3979"
 export NO_SCHEDULE="true"
 export ZONE="3"
 
-export DEBUG="miflora"
+export DEBUG="miflora:*"
 
 echo "Run the server"
 npm run local
