@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.14.1
+version: v1.15.0
 ignore: {}
 # patches apply the minimum changes required to fix a vulnerability
 patch:
@@ -58,3 +58,9 @@ patch:
         patched: '2020-05-01T06:08:11.711Z'
     - alfred_helper_lib > node-vault > snyk > @snyk/snyk-cocoapods-plugin > @snyk/cocoapods-lockfile-parser > @snyk/dep-graph > graphlib > lodash:
         patched: '2020-05-01T06:08:11.711Z'
+    - alfred_helper_lib > restify > lodash:
+        patched: '2020-06-16T18:35:47.403Z'
+    - alfred_helper_lib > restify > restify-errors > lodash:
+        patched: '2020-06-16T18:35:47.403Z'
+    - alfred_helper_lib > restify > restify-errors > @netflix/nerror > lodash:
+        patched: '2020-06-16T18:35:47.403Z'
