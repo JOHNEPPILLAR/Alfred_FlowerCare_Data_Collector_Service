@@ -11,6 +11,7 @@ RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/Lond
 	libstdc++ \
 	make \
 	python \
+	curl \
 	&& npm install --quiet node-gyp -g \
 	&& rm -rf /var/cache/apk/*
 

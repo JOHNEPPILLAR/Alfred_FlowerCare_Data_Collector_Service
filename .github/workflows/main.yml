@@ -3,7 +3,6 @@ name: CI
 on: [push]
 
 jobs:
-
   security:
     name: 🛡️ Check for vulnerabilities
     runs-on: ubuntu-latest
@@ -13,6 +12,8 @@ jobs:
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
 
       - name: Slack Notification on failure
         if: failure()
@@ -25,11 +26,11 @@ jobs:
           SLACK_TITLE: Build status
           SLACK_MESSAGE: '🛡️ Scan found vulnerabilities'
           SLACK_COLOR: '#ff0000'
-  
+
   node:
     name: 📝 Setup node & check packages install ok
     runs-on: ubuntu-latest
-    steps:    
+    steps:
       - name: Read .nvmrc
         run: echo "##[set-output name=NVMRC;]$(cat .node-version)"
         id: nvm
@@ -37,27 +38,34 @@ jobs:
       - name: Use Node.js (.nvmrc)
         uses: actions/setup-node@v1
         with:
-          node-version: "${{ steps.nvm.outputs.NVMRC }}"
- 
+          node-version: '${{ steps.nvm.outputs.NVMRC }}'
+
       - name: NPM Install
         run: npm install
         env:
           CI: true
-            
+
   build:
     name: 🛠 Build and push docker container
     runs-on: ubuntu-latest
-    needs: [node]
+    needs: [security, node]
     steps:
       - uses: actions/checkout@master
+      - name: Automated Version Bump
+        uses: phips28/gh-action-bump-version@master
+        with:
+          tag-prefix: ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Add private registery to docker deamon
         run: |
           echo "{ \"insecure-registries\": [\"${{ secrets.DOCKER_REGISTERY_URL }}\"] }" | sudo tee /etc/docker/daemon.json
           sudo service docker restart
 
       - name: Login to docker registery
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTERY_URL }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin 
-    
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTERY_URL }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
       - name: Build & push docker container to registry
         run: |
           docker build . -t ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service:latest
