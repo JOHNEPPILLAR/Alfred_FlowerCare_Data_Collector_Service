@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 echo "Set env vars"
-PORT=3978
+PORT=3981
 SERVICE_NAME=$(node -p -e "require('./package.json').name")
 URL=https://$SERVICE_NAME:$PORT/ping
 
