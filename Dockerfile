@@ -1,10 +1,12 @@
-FROM node:14-alpine
+FROM node:14
 
 ENV TZ=Europe/London
 
 RUN mkdir -p /home/nodejs/app \
-	&& apt-get update -y \
-	&& apt-get install -y \
+	&& apt-get update -y
+
+RUN apt-get install -y \
+	tzdata \
 	build-essential \
 	usbutils \
 	bluetooth \
@@ -19,10 +21,9 @@ RUN mkdir -p /home/nodejs/app \
 	make \
 	python \
 	curl \
-	tzdata \
 	&& npm install --quiet node-gyp -g \
-	&& ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/London > /etc/timezone \
-	&& cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+	&& cp -i /usr/share/zoneinfo/$TZ /etc/localtime \
+	&& echo $TZ > /etc/timezone
 
 WORKDIR /home/nodejs/app
 
