@@ -3,21 +3,26 @@ FROM node:14-alpine
 ENV TZ=Europe/London
 
 RUN mkdir -p /home/nodejs/app \
-	&& apk --no-cache --virtual build-dependencies --update add \
-	tzdata \
+	&& apt-get update -y \
+	&& apt-get install -y \
+	build-essential \
+	usbutils \
+	bluetooth \
+	bluez \
+	libbluetooth-dev \
+	libudev-dev \
+	libcap2-bin \
 	git \ 
 	g++ \
 	gcc \
-	libgcc \
 	libstdc++ \
-	linux-headers \
 	make \
 	python \
 	curl \
+	tzdata \
 	&& npm install --quiet node-gyp -g \
-	&& cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
-	&& apk del tzdata \
-	&& rm -rf /var/cache/apk/*
+	&& ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/London > /etc/timezone \
+	&& cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 WORKDIR /home/nodejs/app
 
