@@ -1,18 +1,22 @@
-FROM node:14
+FROM node:14-alpine
 
-RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/London > /etc/timezone \
-	&& mkdir -p /home/nodejs/app \
-	&& apt-get update -y \
-	&& apt-get install -yqq \
-	&& apt-get install -y build-essential usbutils git bluetooth bluez libbluetooth-dev libudev-dev libcap2-bin \
+ENV TZ=Europe/London
+
+RUN mkdir -p /home/nodejs/app \
+	&& apk --no-cache --virtual build-dependencies --update add \
+	tzdata \
 	git \ 
 	g++ \
 	gcc \
+	libgcc \
 	libstdc++ \
+	linux-headers \
 	make \
 	python \
 	curl \
 	&& npm install --quiet node-gyp -g \
+	&& cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+	&& apk del tzdata \
 	&& rm -rf /var/cache/apk/*
 
 WORKDIR /home/nodejs/app
