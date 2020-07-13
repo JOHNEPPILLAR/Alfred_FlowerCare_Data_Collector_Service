@@ -9,6 +9,9 @@ kill -9 $(lsof -sTCP:LISTEN -i:$PORT -t)
 echo "Installing latest"
 #rm -rf node_modules
 #rm package-lock.json
+rm -rf node_modules/alfred-base
+npm up alfred-base
+
 ncu -u
 npm install
 npm audit fix
