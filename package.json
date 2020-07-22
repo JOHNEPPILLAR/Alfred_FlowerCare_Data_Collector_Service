@@ -10,14 +10,15 @@
     "start": "node lib/server/server.js",
     "local": "nodemon lib/server/server.js",
     "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "prepare": "npm run snyk-protect",
+    "test": "snyk test"
   },
   "dependencies": {
     "alfred-base": "git://github.com/johneppillar/alfred_base_service",
     "alfred-helper": "git://github.com/johneppillar/alfred_helper",
-    "miflora": "git://github.com/johneppillar/miflora",
     "dotenv": "^8.2.0",
-    "snyk": "^1.364.0"
+    "miflora": "git://github.com/johneppillar/miflora",
+    "snyk": "^1.364.2"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
