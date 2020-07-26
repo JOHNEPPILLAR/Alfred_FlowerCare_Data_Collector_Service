@@ -28,7 +28,7 @@ export ENVIRONMENT="development"
 export MOCK="false"
 export ALFRED_WEATHER_SERVICE="https://alfred_weather_service:3979"
 export NO_SCHEDULE="false"
-export ZONE="3"
+export ZONE="3,4"
 #export DEBUG="miflora:*"
 
 echo "Run the server"
