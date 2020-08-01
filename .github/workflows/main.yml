@@ -46,18 +46,11 @@ jobs:
           CI: true
 
   build:
-    name: 🛠 Build and push docker container
+    name: 🛠 Build and push docker containers
     runs-on: ubuntu-latest
     needs: [security, node]
     steps:
       - uses: actions/checkout@master
-      - name: Automated Version Bump
-        uses: phips28/gh-action-bump-version@master
-        with:
-          tag-prefix: ''
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Add private registery to docker deamon
         run: |
           echo "{ \"insecure-registries\": [\"${{ secrets.DOCKER_REGISTERY_URL }}\"] }" | sudo tee /etc/docker/daemon.json
@@ -66,21 +59,26 @@ jobs:
       - name: Login to docker registery
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTERY_URL }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      - name: Build & push docker container to registry
-        run: |
-          docker build . -t ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service:latest
-          docker push ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service:latest
-
-      - name: Slack Notification on sucess
+      - name: Build on intel & push docker container to registry
         if: success()
-        uses: rtCamp/action-slack-notify@master
+        run: |
+          docker build . -t ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service
+          docker push ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service
+
+      - name: Build on arm & push docker container to registry
+        if: success()
+        uses: crazy-max/ghaction-docker-buildx@v3
+        with:
+          buildx-version: latest
+          qemu-version: latest
         env:
-          SLACK_CHANNEL: github_builds
-          SLACK_USERNAME: 'Github CI'
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_ICON: https://avatars2.githubusercontent.com/u/25100863?s=40&v=4
-          SLACK_TITLE: Build status
-          SLACK_MESSAGE: 'Build passed  :rocket:'
+          DOCKER_TARGET_PLATFORM: linux/arm64
+        run: |
+          docker buildx build \
+          --platform ${DOCKER_TARGET_PLATFORM} \
+          --tag ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service_rpi \
+          --file ./Dockerfile \
+          --output type=image,push=true .
 
       - name: Slack Notification on failure
         if: failure()
@@ -93,3 +91,26 @@ jobs:
           SLACK_TITLE: Build status
           SLACK_MESSAGE: 'Build failed  :bangbang:'
           SLACK_COLOR: '#ff0000'
+
+    bumpver:
+      name: 🏁 Finish build process
+      runs-on: ubuntu-latest
+      needs: [build]
+      steps:
+        - name: Automated Version Bump
+          uses: phips28/gh-action-bump-version@master
+          with:
+            tag-prefix: ''
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+        - name: Slack Notification on sucess
+          if: success()
+          uses: rtCamp/action-slack-notify@master
+          env:
+            SLACK_CHANNEL: github_builds
+            SLACK_USERNAME: 'Github CI'
+            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+            SLACK_ICON: https://avatars2.githubusercontent.com/u/25100863?s=40&v=4
+            SLACK_TITLE: Build status
+            SLACK_MESSAGE: 'Build passed  :rocket:'
