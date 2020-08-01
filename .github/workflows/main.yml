@@ -70,7 +70,7 @@ jobs:
         if: success()
         run: |
           echo "{ \"insecure-registries\": [\"${{ secrets.DOCKER_REGISTERY_URL }}\"] }" | sudo tee /etc/docker/daemon.json
-          echo "{{ CA }}" > /usr/local/share/ca-certificates/ca.crt
+          echo "{{ CA }}" | sudo tee /usr/local/share/ca-certificates/ca.crt
           sudo update-ca-certificates
           sudo service docker restart
 
