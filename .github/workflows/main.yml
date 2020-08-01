@@ -64,11 +64,8 @@ jobs:
       - name: Add private registery to docker deamon
         if: success()
         run: |
-          sudo mkdir /etc/docker/certs.d
-          sudo mkdir /etc/docker/certs.d/${{ secrets.DOCKER_REGISTERY_URL }}/
-          echo "{{ CA }}" | sudo tee /etc/docker/certs.d/${{ secrets.DOCKER_REGISTERY_URL }}/ca.crt
-          echo "{{ CERT_KEY }}" | sudo tee /etc/docker/certs.d/${{ secrets.DOCKER_REGISTERY_URL }}/client.key
-          echo "{{ CERT }}" | sudo tee /etc/docker/certs.d/${{ secrets.DOCKER_REGISTERY_URL }}/client.cert
+          echo "{{ CA }}" | sudo tee /usr/local/share/ca-certificates/ca.crt
+          sudo update-ca-certificates
           sudo service docker restart
 
       - name: Login to docker registery
@@ -78,11 +75,8 @@ jobs:
       - name: Build docker container
         if: success()
         run: |
-          docker buildx build \
-          --platform linux/amd64,linux/arm64 \
-          --tag ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service \
-          --file ./Dockerfile \
-          --output type=image,push=true .
+          docker build . -t ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service:intel
+          docker push ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service:intel
 
       - name: Slack Notification on failure
         if: failure()
