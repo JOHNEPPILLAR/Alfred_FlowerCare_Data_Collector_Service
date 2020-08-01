@@ -48,47 +48,47 @@ jobs:
   build:
     name: 🛠 Build and push docker containers
     runs-on: ubuntu-latest
-    env:
-      DOCKER_TARGET_PLATFORM: linux/arm64
     needs: [security, node]
     steps:
       - name: Checkout the code
         uses: actions/checkout@v1
 
+      - name: Bump version
+        uses: phips28/gh-action-bump-version@master
+        with:
+          tag-prefix: ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set up Docker Buildx
+        if: success()
         uses: crazy-max/ghaction-docker-buildx@v1
         with:
           version: latest
 
-      - name: Prepare
+      # docker build . -t ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service
+      - name: Build docker container
         if: success()
-        id: prepare
-        run: |
-          echo ::set-output name=docker_platform::${DOCKER_TARGET_PLATFORM}
-          echo ::set-output name=docker_image::${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service_rpi
-
+          run: |
+            docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --tag ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service \
+            --file ./Dockerfile \
+            --output type=image .
+  
       - name: Add private registery to docker deamon
+        if: success()
         run: |
           echo "{ \"insecure-registries\": [\"${{ secrets.DOCKER_REGISTERY_URL }}\"] }" | sudo tee /etc/docker/daemon.json
           sudo service docker restart
 
       - name: Login to docker registery
+        if: success()
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTERY_URL }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      - name: Build on arm & push docker container to registry
+      - name: Push docker container to registry
         if: success()
-        run: |
-          docker buildx build \
-          --platform ${{ steps.prepare.outputs.docker_platform }} \
-          --tag ${{ steps.prepare.outputs.docker_image }} \
-          --file ./Dockerfile \
-          --output type=image,push=true .
-
-      - name: Build on intel & push docker container to registry
-        if: success()
-        run: |
-          docker build . -t ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service
-          docker push ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service
+        run: docker push ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service
 
       - name: Slack Notification on failure
         if: failure()
@@ -101,14 +101,6 @@ jobs:
           SLACK_TITLE: Build status
           SLACK_MESSAGE: 'Build failed  :bangbang:'
           SLACK_COLOR: '#ff0000'
-
-      - name: Automated Version Bump
-        if: success()
-        uses: phips28/gh-action-bump-version@master
-        with:
-          tag-prefix: ''
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Slack Notification on sucess
         if: success()
