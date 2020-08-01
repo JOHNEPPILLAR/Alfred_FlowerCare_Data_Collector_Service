@@ -28,7 +28,7 @@ jobs:
           SLACK_COLOR: '#ff0000'
 
   node:
-    name: 📝 Setup node & check packages install ok
+    name: 📝 Setup node
     runs-on: ubuntu-latest
     steps:
       - name: Read .nvmrc
@@ -39,11 +39,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '${{ steps.nvm.outputs.NVMRC }}'
-
-      - name: NPM Install
-        run: npm install
-        env:
-          CI: true
 
   build:
     name: 🛠 Build and push docker containers
@@ -69,9 +64,11 @@ jobs:
       - name: Add private registery to docker deamon
         if: success()
         run: |
-          echo "{ \"insecure-registries\": [\"${{ secrets.DOCKER_REGISTERY_URL }}\"] }" | sudo tee /etc/docker/daemon.json
-          echo "{{ CA }}" | sudo tee /usr/local/share/ca-certificates/ca.crt
-          sudo update-ca-certificates
+          sudo mkdir /etc/docker/certs.d
+          sudo mkdir /etc/docker/certs.d/${{ secrets.DOCKER_REGISTERY_URL }}/
+          echo "{{ CA }}" | sudo tee /etc/docker/certs.d/${{ secrets.DOCKER_REGISTERY_URL }}/ca.crt
+          echo "{{ CERT_KEY }}" | sudo tee /etc/docker/certs.d/${{ secrets.DOCKER_REGISTERY_URL }}/client.key
+          echo "{{ CERT }}" | sudo tee /etc/docker/certs.d/${{ secrets.DOCKER_REGISTERY_URL }}/client.cert
           sudo service docker restart
 
       - name: Login to docker registery
