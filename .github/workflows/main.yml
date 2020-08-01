@@ -64,7 +64,7 @@ jobs:
       - name: Add private registery to docker deamon
         if: success()
         run: |
-          echo "{{ CA }}" | sudo tee /usr/local/share/ca-certificates/ca.crt
+          echo ${{ secrets.CA }} | sudo tee /usr/local/share/ca-certificates/ca.crt
           sudo update-ca-certificates
           sudo service docker restart
 
