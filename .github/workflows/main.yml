@@ -66,7 +66,18 @@ jobs:
         with:
           version: latest
 
-      # docker build . -t ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service
+      - name: Add private registery to docker deamon
+        if: success()
+        run: |
+          echo "{ \"insecure-registries\": [\"${{ secrets.DOCKER_REGISTERY_URL }}\"] }" | sudo tee /etc/docker/daemon.json
+          echo "{{ CA }} | /usr/local/share/ca-certificates/ca.crt"
+          sudo update-ca-certificates
+          sudo service docker restart
+
+      - name: Login to docker registery
+        if: success()
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTERY_URL }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
       - name: Build docker container
         if: success()
         run: |
@@ -74,21 +85,7 @@ jobs:
           --platform linux/amd64,linux/arm64 \
           --tag ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service \
           --file ./Dockerfile \
-          --output type=image .
-
-      - name: Add private registery to docker deamon
-        if: success()
-        run: |
-          echo "{ \"insecure-registries\": [\"${{ secrets.DOCKER_REGISTERY_URL }}\"] }" | sudo tee /etc/docker/daemon.json
-          sudo service docker restart
-
-      - name: Login to docker registery
-        if: success()
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTERY_URL }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      - name: Push docker container to registry
-        if: success()
-        run: docker push ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service
+          --output type=image,push=true .
 
       - name: Slack Notification on failure
         if: failure()
