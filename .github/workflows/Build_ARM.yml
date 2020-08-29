@@ -33,19 +33,17 @@ jobs:
         if: success()
         run: |
           echo "{ \"insecure-registries\": [\"${{ secrets.DOCKER_REGISTERY_URL }}\"] }" | sudo tee /etc/docker/daemon.json          
-          cat /etc/buildkit/buildkitd.toml
+          cat <<EOF > buildkitd.toml
+          [registry.\"${{ secrets.DOCKER_REGISTERY_URL }}\"]
+          http=true
+          insecure=true
+          EOF
+          cat buildkitd.toml
           sudo service docker restart
 
       - name: Login to private registery
         if: success()
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTERY_URL }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      #    cat <<EOF > buildkitd.toml
-      #    [registry.\"${{ secrets.DOCKER_REGISTERY_URL }}\"]
-      #    http=true
-      #    insecure=true
-      #    EOF
-      #    cat buildkitd.toml
 
       #- name: Run Buildx (build and push image)
       #  if: success()
