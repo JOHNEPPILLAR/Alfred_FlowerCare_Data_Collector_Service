@@ -14,10 +14,10 @@
     "test": "snyk test"
   },
   "dependencies": {
+    "@abandonware/noble": "^1.9.2-9",
     "alfred-base": "git://github.com/johneppillar/alfred_base_service",
     "alfred-helper": "git://github.com/johneppillar/alfred_helper",
     "dotenv": "^8.2.0",
-    "@abandonware/noble": "^1.9.2-9",
     "snyk": "^1.386.0"
   },
   "devDependencies": {
