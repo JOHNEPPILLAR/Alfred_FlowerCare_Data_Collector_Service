@@ -48,6 +48,14 @@ jobs:
         if: success()
         uses: actions/checkout@master
 
+      - name: Automated Version Bump
+        if: success()
+        uses: phips28/gh-action-bump-version@master
+        with:
+          tag-prefix: ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build docker container
         if: success()
         run: docker build . -t ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service:intel
