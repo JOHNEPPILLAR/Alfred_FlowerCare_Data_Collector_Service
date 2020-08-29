@@ -29,14 +29,6 @@ jobs:
           buildx-version: latest
           qemu-version: latest
 
-      - name: Prepare
-        if: success()
-        id: prepare
-        run: |
-          echo ::set-output name=docker_platform::${DOCKER_TARGET_PLATFORM}
-          echo ::set-output name=docker_image::${DOCKER_REGISTRY}/${DOCKER_IMAGE}
-          echo ::set-output name=version::${GITHUB_RUN_NUMBER}
-
       - name: Add private registery to docker deamon
         if: success()
         run: |
@@ -49,8 +41,9 @@ jobs:
 
       - name: Run Buildx (push image)
         if: success()
-        run: docker buildx build \
-          --platform ${{ steps.prepare.outputs.docker_platform }} \
-          --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} \
-          --file ./Dockerfile \
-          --output type=image,push=true .
+        run: |
+          docker buildx build \
+            --platform linux/arm/v7 
+            --tag ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service:arm \
+            --file ./Dockerfile \
+            --output type=image,push=true .
