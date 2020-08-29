@@ -32,13 +32,21 @@ jobs:
       - name: Add private registery to docker deamon
         if: success()
         run: |
-          echo "{ \"insecure-registries\": [\"${{ secrets.DOCKER_REGISTERY_URL }}\"] }" | sudo tee /etc/docker/daemon.json
+          echo "{ \"insecure-registries\": [\"${{ secrets.DOCKER_REGISTERY_URL }}\"] }" | sudo tee /etc/docker/daemon.json          
+          cat /etc/buildkit/buildkitd.toml
           sudo service docker restart
 
       - name: Login to private registery
         if: success()
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTERY_URL }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      - name: Run Buildx (push image)
-        if: success()
-        run: docker buildx build --platform linux/arm/v7 --tag ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service:arm --output type=image,push=true .
+      #    cat <<EOF > buildkitd.toml
+      #    [registry.\"${{ secrets.DOCKER_REGISTERY_URL }}\"]
+      #    http=true
+      #    insecure=true
+      #    EOF
+      #    cat buildkitd.toml
+
+      #- name: Run Buildx (build and push image)
+      #  if: success()
+      #  run: docker buildx build --platform linux/arm/v7 --tag ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service:arm --output type=image,push=true .
