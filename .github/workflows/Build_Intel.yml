@@ -3,7 +3,7 @@ name: BUILD_INTEL
 on:
   push:
     branches:
-      - master
+      - master1
 
 jobs:
   build:
