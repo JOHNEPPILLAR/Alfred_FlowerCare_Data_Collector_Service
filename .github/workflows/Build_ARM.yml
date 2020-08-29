@@ -23,6 +23,7 @@ jobs:
       uses: actions/checkout@master
 
     - name: Set up Docker Buildx
+      id: buildx
       uses: crazy-max/ghaction-docker-buildx@v3
       with:
         buildx-version: latest
