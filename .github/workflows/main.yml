@@ -8,7 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
-      - uses: actions/checkout@master
+      - name: Checkout repo
+        uses: actions/checkout@master
+
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
@@ -42,9 +44,9 @@ jobs:
         if: success()
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTERY_URL }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      - name: Checkout the code
+      - name: Checkout repo
         if: success()
-        uses: actions/checkout@v1
+        uses: actions/checkout@master
 
       - name: Build docker container
         if: success()
