@@ -3,19 +3,12 @@ name: BUILD_ARM
 on:
   push:
     branches:
-      - master
+      - master1
 
 jobs:
   build:
     name: 🛠 Build and publish to private registery
     runs-on: ubuntu-latest
-
-    env:
-      DOCKER_REGISTRY: secrets.DOCKER_REGISTERY_URL
-      DOCKER_IMAGE: alfred_flowercare_data_collector_service:arm
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      DOCKER_TARGET_PLATFORM: linux/arm/v7
 
     steps:
       - name: Checkout repo
@@ -29,17 +22,17 @@ jobs:
           buildx-version: latest
           qemu-version: latest
 
-      - name: Add private registery to docker deamon
-        if: success()
-        run: |
-          echo "{ \"insecure-registries\": [\"${{ secrets.DOCKER_REGISTERY_URL }}\"] }" | sudo tee /etc/docker/daemon.json          
-          cat <<EOF > buildkitd.toml
-          [registry.\"${{ secrets.DOCKER_REGISTERY_URL }}\"]
-          http = true
-          insecure = true
-          EOF
-          cat buildkitd.toml
-          sudo service docker restart
+      # - name: Add private registery to docker deamon
+      #   if: success()
+      #   run: |
+      #     echo "{ \"insecure-registries\": [\"${{ secrets.DOCKER_REGISTERY_URL }}\"] }" | sudo tee /etc/docker/daemon.json
+      #     cat <<EOF > buildkitd.toml
+      #     [registry.\"${{ secrets.DOCKER_REGISTERY_URL }}\"]
+      #     http = true
+      #     insecure = true
+      #     EOF
+      #     cat buildkitd.toml
+      #     sudo service docker restart
 
       - name: Login to private registery
         if: success()
@@ -47,5 +40,4 @@ jobs:
 
       - name: Run Buildx (build and push image)
         if: success()
-        run: docker buildx create --config buildkitd.toml
         run: docker buildx build --platform linux/arm/v7 --tag ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service:arm --output type=image,push=true .
