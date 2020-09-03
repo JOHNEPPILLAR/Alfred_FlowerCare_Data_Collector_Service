@@ -3,7 +3,7 @@ name: BUILD_ARM
 on:
   push:
     branches:
-      - master1
+      - master
 
 jobs:
   build:
@@ -21,18 +21,6 @@ jobs:
         with:
           buildx-version: latest
           qemu-version: latest
-
-      # - name: Add private registery to docker deamon
-      #   if: success()
-      #   run: |
-      #     echo "{ \"insecure-registries\": [\"${{ secrets.DOCKER_REGISTERY_URL }}\"] }" | sudo tee /etc/docker/daemon.json
-      #     cat <<EOF > buildkitd.toml
-      #     [registry.\"${{ secrets.DOCKER_REGISTERY_URL }}\"]
-      #     http = true
-      #     insecure = true
-      #     EOF
-      #     cat buildkitd.toml
-      #     sudo service docker restart
 
       - name: Login to private registery
         if: success()
