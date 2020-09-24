@@ -1,4 +1,6 @@
-FROM node:14 AS builder
+FROM node:14 
+
+ENV TZ=Europe/London
 
 ## Install build toolchain
 RUN mkdir -p /home/nodejs/app \
@@ -18,7 +20,9 @@ RUN mkdir -p /home/nodejs/app \
 	make \
 	python \
 	curl \
-	&& npm install --quiet node-gyp -g
+	tzdata \
+	&& npm install --quiet node-gyp -g \
+	&& echo $TZ > /etc/timezone
 
 ## Install node deps and compile native add-ons
 WORKDIR /home/nodejs/app
@@ -27,28 +31,6 @@ COPY package*.json ./
 
 RUN npm install
 
-## Setup clean small container
-FROM node:14 AS app
-
-ENV TZ=Europe/London
-
-RUN mkdir -p /home/nodejs/app \
-	&& apt-get update \
-	&& apt-get install -y \
-	tzdata \
-	curl \
-	usbutils \
-	bluetooth \
-	bluez \
-	libbluetooth-dev \
-	libudev-dev \
-	libcap2-bin \
-	&& echo $TZ > /etc/timezone
-
-WORKDIR /home/nodejs/app
-
-## Copy pre-installed/build modules and app
-COPY --from=builder /home/nodejs/app .
 COPY --chown=node:node . .
 
 ## Run node without root
