@@ -1,12 +1,8 @@
-FROM node:14
+FROM node:14 AS builder
 
-ENV TZ=Europe/London
-
+## Install build toolchain
 RUN mkdir -p /home/nodejs/app \
-	&& apt-get update -y
-
-RUN apt-get install -y \
-	tzdata \
+	&& apk add --no-cache --virtual build-dependencies \
 	build-essential \
 	usbutils \
 	bluetooth \
@@ -17,26 +13,51 @@ RUN apt-get install -y \
 	git \ 
 	g++ \
 	gcc \
+	libgcc \
 	libstdc++ \
+	linux-headers \
 	make \
 	python \
-	curl \
-	&& npm install --quiet node-gyp -g \
-	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
-	&& echo $TZ > /etc/timezone
+	&& npm install --quiet node-gyp -g
 
+## Install node deps and compile native add-ons
 WORKDIR /home/nodejs/app
 
 COPY package*.json ./
 
-RUN setcap cap_net_raw+eip $(eval readlink -f `which node`)
-
 RUN npm install
 
+## Setup clean small container
+FROM node:14 AS app
+
+ENV TZ=Europe/London
+
+RUN mkdir -p /home/nodejs/app \
+	&& apk add --no-cache --virtual \
+	tzdata \
+	curl \
+	usbutils \
+	bluetooth \
+	bluez \
+	libbluetooth-dev \
+	libudev-dev \
+	libcap2-bin \
+	&& echo $TZ > /etc/timezone \
+	&& rm -rf /var/cache/apk/*
+
+WORKDIR /home/nodejs/app
+
+## Copy pre-installed/build modules and app
+COPY --from=builder /home/nodejs/app .
 COPY --chown=node:node . .
 
+## Run node without root
+RUN setcap cap_net_raw+eip $(eval readlink -f `which node`)
+
+## Swap to node user
 USER node
 
+## Setup health check
 HEALTHCHECK --start-period=60s --interval=10s --timeout=10s --retries=6 CMD ["./healthcheck.sh"]
 
 EXPOSE 3981

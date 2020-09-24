@@ -3,13 +3,9 @@
   "description": "describes properties required to update flowercare device schedule",
   "type": "object",
   "properties": {
-    "scheduleID": {
+    "schedule": {
       "type": "string",
-      "description": "Schedule ID"
-    },
-    "type": {
-      "type": "number",
-      "description": "Device type"
+      "description": "Schedule"
     },
     "name": {
       "type": "string",
@@ -23,14 +19,13 @@
       "type": "number",
       "description": "Minute"
     },
-    "aiOverride": {
+    "override": {
       "type": "boolean",
-      "description": "Schedule aiOverride"
+      "description": "Schedule override"
     },
     "active": {
       "type": "boolean",
       "description": "Device active"
     }
-  },
-  "required": ["scheduleID"]
+  }
 }
