@@ -2,7 +2,7 @@ FROM node:14 AS builder
 
 ## Install build toolchain
 RUN mkdir -p /home/nodejs/app \
-	&& apk add --no-cache --virtual build-dependencies \
+	&& apt-get install -y \
 	build-essential \
 	usbutils \
 	bluetooth \
@@ -33,7 +33,7 @@ FROM node:14 AS app
 ENV TZ=Europe/London
 
 RUN mkdir -p /home/nodejs/app \
-	&& apk add --no-cache --virtual \
+	&& apt-get install -y \
 	tzdata \
 	curl \
 	usbutils \
@@ -42,8 +42,7 @@ RUN mkdir -p /home/nodejs/app \
 	libbluetooth-dev \
 	libudev-dev \
 	libcap2-bin \
-	&& echo $TZ > /etc/timezone \
-	&& rm -rf /var/cache/apk/*
+	&& echo $TZ > /etc/timezone
 
 WORKDIR /home/nodejs/app
 
