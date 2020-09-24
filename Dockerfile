@@ -13,11 +13,10 @@ RUN mkdir -p /home/nodejs/app \
 	git \ 
 	g++ \
 	gcc \
-	libgcc \
 	libstdc++ \
-	linux-headers \
 	make \
 	python \
+	curl \
 	&& npm install --quiet node-gyp -g
 
 ## Install node deps and compile native add-ons
