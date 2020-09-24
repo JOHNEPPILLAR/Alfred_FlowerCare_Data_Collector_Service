@@ -2,6 +2,7 @@ FROM node:14 AS builder
 
 ## Install build toolchain
 RUN mkdir -p /home/nodejs/app \
+	&& apt-get update \
 	&& apt-get install -y \
 	build-essential \
 	usbutils \
@@ -32,6 +33,7 @@ FROM node:14 AS app
 ENV TZ=Europe/London
 
 RUN mkdir -p /home/nodejs/app \
+	&& apt-get update \
 	&& apt-get install -y \
 	tzdata \
 	curl \
