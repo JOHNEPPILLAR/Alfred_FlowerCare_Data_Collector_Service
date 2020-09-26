@@ -4,8 +4,8 @@
     "location": "Garden",
     "plant": "Lemon Tree",
     "zone": 1,
-    "threshold_moisture": 15,
-    "threshold_fertilizer": null,
+    "thresholdMoisture": 15,
+    "thresholdFertilizer": null,
     "active": true
   },
   {
@@ -13,8 +13,8 @@
     "location": "Garden",
     "plant": "Strawberry",
     "zone": 1,
-    "threshold_moisture": 15,
-    "threshold_fertilizer": null,
+    "thresholdMoisture": 15,
+    "thresholdFertilizer": null,
     "active": true
   },
   {
@@ -22,8 +22,8 @@
     "location": "Garden",
     "plant": "Hanging Basket",
     "zone": 1,
-    "threshold_moisture": 15,
-    "threshold_fertilizer": null,
+    "thresholdMoisture": 15,
+    "thresholdFertilizer": null,
     "active": true
   },
   {
@@ -31,8 +31,8 @@
     "location": "Garden",
     "plant": "Tomato",
     "zone": 2,
-    "threshold_moisture": 15,
-    "threshold_fertilizer": null,
+    "thresholdMoisture": 15,
+    "thresholdFertilizer": null,
     "active": true
   },
   {
@@ -40,8 +40,8 @@
     "location": "Garden",
     "plant": "Herbs",
     "zone": 2,
-    "threshold_moisture": 15,
-    "threshold_fertilizer": null,
+    "thresholdMoisture": 15,
+    "thresholdFertilizer": null,
     "active": true
   },
   {
@@ -49,8 +49,8 @@
     "location": "Office",
     "plant": "Devil's Ivy",
     "zone": 3,
-    "threshold_moisture": 15,
-    "threshold_fertilizer": null,
+    "thresholdMoisture": 15,
+    "thresholdFertilizer": null,
     "active": true
   },
   {
@@ -58,8 +58,8 @@
     "location": "Office",
     "plant": "Anthurium",
     "zone": 3,
-    "threshold_moisture": 10,
-    "threshold_fertilizer": null,
+    "thresholdMoisture": 10,
+    "thresholdFertilizer": null,
     "active": true
   },
   {
@@ -67,8 +67,8 @@
     "location": "Main bedroom",
     "plant": "Devil's Ivy",
     "zone": 4,
-    "threshold_moisture": 15,
-    "threshold_fertilizer": null,
+    "thresholdMoisture": 15,
+    "thresholdFertilizer": null,
     "active": true
   },
   {
@@ -76,8 +76,8 @@
     "location": "Living room",
     "plant": "Sansevieria",
     "zone": 5,
-    "threshold_moisture": 10,
-    "threshold_fertilizer": null,
+    "thresholdMoisture": 10,
+    "thresholdFertilizer": null,
     "active": true
   },
   {
@@ -85,8 +85,8 @@
     "location": "Living room",
     "plant": "Zamioculcas",
     "zone": 5,
-    "threshold_moisture": 15,
-    "threshold_fertilizer": null,
+    "thresholdMoisture": 15,
+    "thresholdFertilizer": null,
     "active": true
   }
 ]
