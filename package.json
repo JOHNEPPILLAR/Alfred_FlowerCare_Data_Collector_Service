@@ -19,7 +19,7 @@
     "alfred-helper": "git://github.com/johneppillar/alfred_helper",
     "dotenv": "^8.2.0",
     "moment": "^2.29.0",
-    "snyk": "^1.401.0"
+    "snyk": "^1.406.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
@@ -27,10 +27,10 @@
     "eslint-config-airbnb": "^18.2.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-config-prettier": "^6.12.0",
-    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-react": "^7.21.2",
+    "eslint-plugin-react": "^7.21.3",
     "eslint-plugin-react-hooks": "^4.1.2",
     "prettier": "^2.1.2"
   }
