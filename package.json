@@ -17,7 +17,7 @@
     "alfred-helper": "git://github.com/johneppillar/alfred_helper",
     "dotenv": "^8.2.0",
     "moment": "^2.29.1",
-    "snyk": "^1.420.1"
+    "snyk": "^1.425.4"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
