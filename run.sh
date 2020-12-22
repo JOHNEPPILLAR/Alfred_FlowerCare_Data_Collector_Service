@@ -21,10 +21,6 @@ else
 
     echo "Install updates"
     npm install
-
-    echo "Check for security issues"
-    npm audit fix
-    snyk test
 fi
 
 echo "Set env vars"
@@ -45,6 +41,8 @@ export APP_ROLE_ID=${APP_ROLE_ID:1:${#APP_ROLE_ID}-2}
 VAULES=$(vault write -f --format=json -address=$VAULT_URL auth/approle/role/$APP_NAME/secret-id)
 APP_TOKEN=$(echo $VAULES | jq .data.secret_id)
 export APP_TOKEN=${APP_TOKEN:1:${#APP_TOKEN}-2}
+
+export DEBUG="Flower:*"
 
 echo "Run the server"
 npm run local

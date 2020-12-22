@@ -4,32 +4,31 @@
   "description": "ALFRED - FlowerCare data Collector Service",
   "author": "JP",
   "license": "MIT",
-  "snyk": true,
   "main": "lib/server/server.js",
   "scripts": {
     "start": "node lib/server/server.js",
-    "local": "nodemon lib/server/server.js",
-    "test": "snyk test"
+    "local": "nodemon lib/server/server.js"
   },
   "dependencies": {
     "@abandonware/noble": "^1.9.2-10",
     "alfred-base": "git://github.com/johneppillar/alfred_base_service",
     "alfred-helper": "git://github.com/johneppillar/alfred_helper",
+    "debug": "4.3.1",
     "dotenv": "^8.2.0",
-    "moment": "^2.29.1",
-    "snyk": "^1.420.1"
+    "moment": "^2.29.1"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.12.1",
-    "eslint-config-airbnb": "^18.2.0",
-    "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-config-prettier": "^6.14.0",
+    "eslint": "^7.16.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-prettier": "^3.3.0",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "prettier": "^2.1.2"
+    "prettier": "^2.2.1",
+    "snyk": "^1.437.2"
   }
 }
