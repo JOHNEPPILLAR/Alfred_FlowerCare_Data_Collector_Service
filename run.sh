@@ -25,10 +25,10 @@ fi
 
 echo "Set env vars"
 export ENVIRONMENT="development"
-export MOCK="false"
-export ALFRED_WEATHER_SERVICE="https://alfred_weather_service:3979"
-export NO_SCHEDULE="false"
-export ZONE="3,4"
+export ALFRED_WEATHER_SERVICE="https://johnpillar.me:3981/weather"
+export NO_SCHEDULE="true"
+export NO_SCAN="false"
+export ZONE="3"
 export SERVER_NAME="Laptop"
 
 echo "Get app vault token"
