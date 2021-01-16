@@ -25,9 +25,6 @@ fi
 
 echo "Set env vars"
 export ENVIRONMENT="development"
-export ALFRED_WEATHER_SERVICE="https://johnpillar.me:3981/weather"
-export NO_SCHEDULE="true"
-export NO_SCAN="false"
 export ZONE="3"
 export SERVER_NAME="Laptop"
 
