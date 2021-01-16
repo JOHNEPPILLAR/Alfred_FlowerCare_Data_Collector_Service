@@ -19,19 +19,21 @@ jobs:
         uses: actions/checkout@master
 
       - name: Set up Docker Buildx
-        id: buildx
-        uses: crazy-max/ghaction-docker-buildx@v3
+        if: success()
+        uses: docker/setup-buildx-action@master
         with:
-          buildx-version: latest
-          qemu-version: latest
+          install: true
 
       - name: Run Buildx (build and push image)
         if: success()
         run: |
-          docker buildx build \
+          docker build . \
             --platform linux/amd64,linux/arm64,linux/arm/v7 \
             --tag ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_flowercare_data_collector_service \
-            --output type=image,push=true .
+
+      - name: Push docker container to private registery
+        if: success()
+        run: docker push ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_health_service
 
       - name: Bump build version number
         if: success()
