@@ -1,20 +1,14 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.14.1
+version: v1.19.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   SNYK-JS-BL-608877:
     - snyk > snyk-docker-plugin > tar-stream > bl:
         reason: None given
         expires: '2020-09-28T08:08:11.959Z'
-      prebuild-install > tar-fs > tar-stream > bl:
-        reason: None given
-        expires: '2020-09-28T08:11:35.255Z'
     - snyk > snyk-docker-plugin > @snyk/snyk-docker-pull > tar-stream > bl:
         reason: None given
         expires: '2020-09-28T08:08:11.959Z'
-      usb > prebuild-install > tar-fs > tar-stream > bl:
-        reason: None given
-        expires: '2020-09-28T08:11:35.255Z'
     - snyk > snyk-nodejs-lockfile-parser > @yarnpkg/core > tar-stream > bl:
         reason: None given
         expires: '2020-09-28T08:08:11.959Z'
@@ -24,6 +18,12 @@ ignore:
     - usb > prebuild-install > tar-fs > tar-stream > bl:
         reason: None given
         expires: '2020-09-28T08:08:11.960Z'
+    - prebuild-install > tar-fs > tar-stream > bl:
+        reason: None given
+        expires: '2020-09-28T08:11:35.255Z'
+    - usb > prebuild-install > tar-fs > tar-stream > bl:
+        reason: None given
+        expires: '2020-09-28T08:11:35.255Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   SNYK-JS-LODASH-567746:
