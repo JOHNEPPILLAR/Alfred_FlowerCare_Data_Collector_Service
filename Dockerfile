@@ -1,6 +1,4 @@
-FROM node:15 
-
-ENV TZ=Europe/London
+FROM node:16 AS builder
 
 ## Install build toolchain
 RUN mkdir -p /home/nodejs/app \
@@ -12,26 +10,45 @@ RUN mkdir -p /home/nodejs/app \
 	bluez \
 	libbluetooth-dev \
 	libudev-dev \
-	libcap2-bin \
 	git \ 
 	g++ \
 	gcc \
-	libstdc++ \
 	make \
 	python \
-	curl \
-	tzdata \
-	&& npm install --quiet node-gyp -g \
-	&& echo $TZ > /etc/timezone
+	&& npm install --quiet node-gyp -g
 
-## Install node deps and compile native add-ons
+## Copy package file and compile
 WORKDIR /home/nodejs/app
 
 COPY package*.json ./
 
 RUN npm install
 
+## Setup clean container
+FROM node:16 AS app
+
+ENV TZ=Europe/London
+
+## Install libs
+RUN mkdir -p /home/nodejs/app \
+	bluetooth \
+	bluez \
+	libbluetooth-dev \
+	libudev-dev \
+	libcap2-bin \
+	curl \
+	tzdata \
+	&& echo $TZ > /etc/timezone
+
+WORKDIR /home/nodejs/app
+
+## Copy pre-installed/build modules and app
+COPY --from=builder /home/nodejs/app .
+
+## Set permissions
 COPY --chown=node:node . .
+
+RUN chown -R node:node /home/nodejs/app
 
 ## Run node without root
 RUN setcap cap_net_raw+eip $(eval readlink -f `which node`)
