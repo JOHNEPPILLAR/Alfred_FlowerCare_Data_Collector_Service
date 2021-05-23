@@ -39,7 +39,11 @@ VAULES=$(vault write -f --format=json -address=$VAULT_URL auth/approle/role/$APP
 APP_TOKEN=$(echo $VAULES | jq .data.secret_id)
 export APP_TOKEN=${APP_TOKEN:1:${#APP_TOKEN}-2}
 
+echo "Set debug"
 export DEBUG="Flower:*"
+
+echo "Set noble multi mode"
+export NOBLE_MULTI_ROLE=1
 
 echo "Run snyk"
 npm run test

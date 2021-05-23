@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 echo "Set env vars"
-PORT=3981
 URL=https://localhost:$PORT/ping
 
 echo "Call url"
