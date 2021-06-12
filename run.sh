@@ -45,9 +45,6 @@ export DEBUG="Flower:*"
 echo "Set noble multi mode"
 export NOBLE_MULTI_ROLE=1
 
-echo "Run snyk"
-npm run test
-
 echo "Run the server"
 npm run local
 
